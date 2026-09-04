@@ -57,6 +57,31 @@ function calculateSkillGaps(industryDemand, currentCurriculum) {
   return gaps.sort((a, b) => b.demand - a.demand);
 }
 
+function generateRecommendations(gaps) {
+  let recommendations = gaps.map(gap => {
+
+    let recommendation;
+
+    if(gap.skill === "React") {
+      recommendation =  "Add React fundamentals, components, hooks and project-based development.";
+    } else if(gap.skill === "AWS") {
+      recommendation = "Add cloud computing fundamentals and AWS deployment modules.";
+    } else if(gap.skill === "Docker") {
+      recommendation = "Add containerization, Docker commands and deployment practices.";
+    } else {
+      recommendation = `Consider adding ${gap.skill} to the curriculum.`;
+    }
+
+    return {
+      skill : gap.skill,
+      demand : gap.demand,
+      priority : gap.priority,
+      recommendation : recommendation,
+    };
+  });
+  return recommendations;
+}
+
 app.get("/", (req, res) => {
   res.send("rout is working");
 });
@@ -87,9 +112,27 @@ app.get("/skill-gap", async (req, res) => {
     )
 
     return {data, gaps};
-  })
+  });
   res.render("skill-gap", { results });
-})
+});
+
+app.get("/recommendations", async (req, res) => {
+
+  const skillData = await SkillDemand.find({});
+
+  let results = skillData.map(data => {
+
+    const gaps = calculateSkillGaps(
+      data.industryDemand,
+      data.currentCurriculum
+    );
+
+    const recommendations = generateRecommendations(gaps);
+
+    return {data, recommendations};
+  });
+  res.render("recommendations", {results});
+});
 
 app.listen(8080, (req, res) => {
     console.log("app is listening your port");
