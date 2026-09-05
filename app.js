@@ -4,7 +4,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const engine = require("ejs-mate");
 const SkillDemand = require("./models/skillDemand");
-const EmployerFeedback = require("./models/EmployerFeedback");
+const EmployerFeedback = require("./models/employerFeedback");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -133,6 +133,42 @@ app.get("/recommendations", async (req, res) => {
     return {data, recommendations};
   });
   res.render("recommendations", {results});
+});
+
+// Employer Feedback Creation
+app.get("/employer-feedback", (req, res) => {
+  res.render("employer-feedback");
+});
+
+app.post("/employer-feedback", async (req, res) => {
+  const {company, role, skills, feedback} = req.body;
+
+  const skillList = skills
+  .split(",")
+  .map(skill => skill.trim())
+  .filter(skill => skill !== "");
+
+  const formattedSkills = skillList.map(skill => ({
+    skill : skill,
+    proficiency : "not specified",
+  }));
+
+  const employerFeedback = new EmployerFeedback({
+    company : company,
+    role : role,
+    skills : formattedSkills,
+    feedback : feedback,
+  });
+
+  await employerFeedback.save();
+
+  res.redirect("/employers");
+});
+
+// Employer Validation
+app.get("/employers", async (req, res) => {
+  const feedbacks = await EmployerFeedback.find({}).sort({createdAt : -1});
+  res.render("employerValidations", {feedbacks})
 });
 
 app.listen(8080, (req, res) => {

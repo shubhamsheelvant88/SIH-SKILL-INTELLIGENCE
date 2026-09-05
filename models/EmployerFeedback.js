@@ -11,7 +11,7 @@ const employerFeedbackSchema  = new mongoose.Schema({
         skill : String,
         proficiency : String,
     }],
-    feeedback : {
+    feedback : {
         type : String,
     },
     createdAt : {
