@@ -4,6 +4,7 @@ const path = require("path");
 const mongoose = require("mongoose");
 const engine = require("ejs-mate");
 const SkillDemand = require("./models/skillDemand");
+const EmployerFeedback = require("./models/EmployerFeedback");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
