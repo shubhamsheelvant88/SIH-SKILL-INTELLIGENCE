@@ -83,6 +83,40 @@ function generateRecommendations(gaps) {
   return recommendations;
 }
 
+function calculateEmployerValidation(gaps, feedbacks) {
+  let totalEmployers = feedbacks.length;
+
+  return gaps.map(gap => {
+    let validatedBy = 0;
+
+    feedbacks.forEach(feedback =>  {
+      // if skill exists in the employer feedback and gap skill matches then increase validated by
+      const skillExists = feedback.skills.some(item => {
+        return item.skill.toLowerCase() === gap.skill.toLowerCase()
+      });
+
+      if(skillExists) {
+        validatedBy++;
+      }
+    });
+
+    let validationPercentage = 0;
+
+    if(totalEmployers > 0) {
+      validationPercentage = Math.round((validatedBy / totalEmployers) * 100);
+    }
+
+    return {
+      skill : gap.skill,
+      demand : gap.demand,
+      priority : gap.priority,
+      validatedBy : validatedBy,
+      totalEmployers : totalEmployers,
+      validationPercentage : validationPercentage,
+    }
+  });
+}
+
 app.get("/", (req, res) => {
   res.send("rout is working");
 });
@@ -155,7 +189,7 @@ app.post("/employer-feedback", async (req, res) => {
 
   const employerFeedback = new EmployerFeedback({
     company : company,
-    role : role,
+    role : role,  
     skills : formattedSkills,
     feedback : feedback,
   });
@@ -169,6 +203,23 @@ app.post("/employer-feedback", async (req, res) => {
 app.get("/employers", async (req, res) => {
   const feedbacks = await EmployerFeedback.find({}).sort({createdAt : -1});
   res.render("employerValidations", {feedbacks})
+});
+
+app.get("/validated-gap", async (req, res) => {
+  const skillData = await SkillDemand.find({});
+
+  const feedbacks = await EmployerFeedback.find({});
+
+  const results = skillData.map(data => {
+
+    const gaps = calculateSkillGaps(data.industryDemand, data.currentCurriculum);
+
+    const validatedGaps = calculateEmployerValidation(gaps, feedbacks);
+
+    return {data, validatedGaps};
+  });
+  console.log(results);
+  res.render("validated-gaps", { results });
 });
 
 app.listen(8080, (req, res) => {
