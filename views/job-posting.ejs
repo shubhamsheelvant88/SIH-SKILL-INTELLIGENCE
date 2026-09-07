@@ -1,0 +1,38 @@
+<% layout('layouts/boilerplate') %>
+
+// Form to enter job posting by the employee
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1>Job Posting Analysis</h1>
+
+        <p class="text-muted">Add a job posting to identify the skills required by industry</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form action="/job-posting" method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Company Name</label>
+                    <input type="text" name="company" class="form-control" placeholder="e.g. TechNova" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Job Role</label>
+                    <input type="text" name="role" class="form-control" placeholder="e.g. Full Stack Developer" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Location</label>
+                    <input type="text" name="location" class="form-control" placeholder="e.g. Bengaluru" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Job Description</label>
+                    <textarea name="description" class="form-control" row="8" placeholder="Paste the job description here..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Analyze Job Posting</button>
+            </form>
+        </div>
+    </div>
+</div>

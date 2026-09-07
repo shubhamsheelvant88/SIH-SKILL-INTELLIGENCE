@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const engine = require("ejs-mate");
 const SkillDemand = require("./models/skillDemand");
 const EmployerFeedback = require("./models/employerFeedback");
+const JobPosting = require("./models/jobPosting");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -117,6 +118,37 @@ function calculateEmployerValidation(gaps, feedbacks) {
   });
 }
 
+function extractSkills(description) {
+
+  const availableSkills = [
+        "JavaScript",
+        "React",
+        "Node.js",
+        "MongoDB",
+        "AWS",
+        "Docker",
+        "TypeScript",
+        "HTML",
+        "CSS",
+        "Python",
+        "Java",
+        "C++",
+        "SQL",
+        "Git",
+        "Express"
+    ];
+
+    const text = description.toLowerCase();
+    const foundSkills = [];
+
+    availableSkills.forEach(skill => {
+      if(text.includes(skill.toLowerCase())) {
+        foundSkills.push(skill);
+      }
+    });
+    return foundSkills;
+}
+
 app.get("/", (req, res) => {
   res.send("rout is working");
 });
@@ -202,7 +234,7 @@ app.post("/employer-feedback", async (req, res) => {
 // Employer Validation
 app.get("/employers", async (req, res) => {
   const feedbacks = await EmployerFeedback.find({}).sort({createdAt : -1});
-  res.render("employerValidations", {feedbacks})
+  res.render("employers", {feedbacks})
 });
 
 app.get("/validated-gap", async (req, res) => {
@@ -220,6 +252,35 @@ app.get("/validated-gap", async (req, res) => {
   });
   console.log(results);
   res.render("validated-gaps", { results });
+});
+
+// Analyse Job Posting 
+app.get("/job-posting", (req, res) => {
+  res.render("job-posting");
+})
+
+app.post("/job-posting", async (req, res) => {
+  let {company, role, location, description} = req.body;
+
+  let extractedSkills = extractSkills(description);
+
+  const jobPosting = new JobPosting({
+    company : company,
+    role : role,
+    location : location,
+    description : description,
+    extractedSkills : extractedSkills,
+  });
+
+  await jobPosting.save();
+
+  res.redirect("job-postings");
+});
+
+app.get("/job-postings", async (req, res) => {
+  const jobs = await JobPosting.find({}).sort({createdAt : -1});
+
+  res.render("job-postings", {jobs});
 });
 
 app.listen(8080, (req, res) => {
