@@ -149,6 +149,66 @@ function extractSkills(description) {
     return foundSkills;
 }
 
+// Calcalute industry demand by the system
+function calculateIndustryDemand(jobs) {
+  const totalJobs = jobs.length;
+
+  const skillCounts = {};
+
+  if(jobs.length == 0) {
+    return {};
+  }
+
+  jobs.forEach(job => {
+    job.extractedSkills.forEach(skill => {
+      if(skillCounts[skill]) {
+        skillCounts[skill]++;
+      } else {
+        skillCounts[skill] = 1;
+      }
+    });
+  });
+
+  const industryDemand = {};
+  for(let skill in skillCounts) {
+    industryDemand[skill] = Math.round((skillCounts[skill] / totalJobs) * 100);
+  }
+  return industryDemand;
+}
+
+// Calculate live skill gaps from the job posting data
+function calculateLiveSkillGaps(industryDemand, currentCurriculum) {
+
+  const curriculumSet = new Set(
+    currentCurriculum.map(skill => skill.toLowerCase())
+  )
+
+  const gaps = [];
+
+  for(let skill in industryDemand) {
+    // if skill not in current curriculum
+    if(!curriculumSet.has(skill)) {
+      let priority;
+
+      if(industryDemand[skill] >= 60) {
+        priority = "High";
+      } else if(industryDemand[skill] >= 40) {
+        priority = "Medium";
+      } else {
+        priority = "Low";
+      }
+
+      gaps.push({
+        skill : skill,
+        demand : industryDemand[skill],
+        priority : priority,
+      });
+    }
+  }
+
+  return gaps.sort((a, b) => b.demand - a.demand);
+}
+
 app.get("/", (req, res) => {
   res.send("rout is working");
 });
@@ -281,6 +341,37 @@ app.get("/job-postings", async (req, res) => {
   const jobs = await JobPosting.find({}).sort({createdAt : -1});
 
   res.render("job-postings", {jobs});
+});
+
+app.get("/industry-demand", async (req, res) => {
+  const jobs = await JobPosting.find({});
+
+  const industryDemand = calculateIndustryDemand(jobs);
+
+  res.render("industry-demand", {industryDemand, totalJobs : jobs.length});
+});
+
+// live analysis 
+app.get("/live-analysis", async (req, res) => {
+
+  const jobs = await JobPosting.find({});
+
+  const industryDemand = calculateIndustryDemand(jobs);
+
+  const skillData = await SkillDemand.findOne({});
+
+  if (!skillData) {
+    return res.send("No curriculum data found.");
+  }
+
+  const gaps = calculateLiveSkillGaps(industryDemand, skillData.currentCurriculum);
+
+  res.render("live-analysis",{
+    industryDemand,
+    gaps,
+    data : skillData,
+    totalJobs : jobs.length
+  });
 });
 
 app.listen(8080, (req, res) => {
