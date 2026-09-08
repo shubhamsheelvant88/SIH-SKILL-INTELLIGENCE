@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const engine = require("ejs-mate");
 const SkillDemand = require("./models/skillDemand");
 const EmployerFeedback = require("./models/employerFeedback");
+const JobPosting = require("./models/jobPosting");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -117,6 +118,97 @@ function calculateEmployerValidation(gaps, feedbacks) {
   });
 }
 
+function extractSkills(description) {
+
+  const availableSkills = [
+        "JavaScript",
+        "React",
+        "Node.js",
+        "MongoDB",
+        "AWS",
+        "Docker",
+        "TypeScript",
+        "HTML",
+        "CSS",
+        "Python",
+        "Java",
+        "C++",
+        "SQL",
+        "Git",
+        "Express"
+    ];
+
+    const text = description.toLowerCase();
+    const foundSkills = [];
+
+    availableSkills.forEach(skill => {
+      if(text.includes(skill.toLowerCase())) {
+        foundSkills.push(skill);
+      }
+    });
+    return foundSkills;
+}
+
+// Calcalute industry demand by the system
+function calculateIndustryDemand(jobs) {
+  const totalJobs = jobs.length;
+
+  const skillCounts = {};
+
+  if(jobs.length == 0) {
+    return {};
+  }
+
+  jobs.forEach(job => {
+    job.extractedSkills.forEach(skill => {
+      if(skillCounts[skill]) {
+        skillCounts[skill]++;
+      } else {
+        skillCounts[skill] = 1;
+      }
+    });
+  });
+
+  const industryDemand = {};
+  for(let skill in skillCounts) {
+    industryDemand[skill] = Math.round((skillCounts[skill] / totalJobs) * 100);
+  }
+  return industryDemand;
+}
+
+// Calculate live skill gaps from the job posting data
+function calculateLiveSkillGaps(industryDemand, currentCurriculum) {
+
+  const curriculumSet = new Set(
+    currentCurriculum.map(skill => skill.toLowerCase())
+  )
+
+  const gaps = [];
+
+  for(let skill in industryDemand) {
+    // if skill not in current curriculum
+    if(!curriculumSet.has(skill)) {
+      let priority;
+
+      if(industryDemand[skill] >= 60) {
+        priority = "High";
+      } else if(industryDemand[skill] >= 40) {
+        priority = "Medium";
+      } else {
+        priority = "Low";
+      }
+
+      gaps.push({
+        skill : skill,
+        demand : industryDemand[skill],
+        priority : priority,
+      });
+    }
+  }
+
+  return gaps.sort((a, b) => b.demand - a.demand);
+}
+
 app.get("/", (req, res) => {
   res.send("rout is working");
 });
@@ -202,7 +294,7 @@ app.post("/employer-feedback", async (req, res) => {
 // Employer Validation
 app.get("/employers", async (req, res) => {
   const feedbacks = await EmployerFeedback.find({}).sort({createdAt : -1});
-  res.render("employerValidations", {feedbacks})
+  res.render("employers", {feedbacks})
 });
 
 app.get("/validated-gap", async (req, res) => {
@@ -220,6 +312,66 @@ app.get("/validated-gap", async (req, res) => {
   });
   console.log(results);
   res.render("validated-gaps", { results });
+});
+
+// Analyse Job Posting 
+app.get("/job-posting", (req, res) => {
+  res.render("job-posting");
+})
+
+app.post("/job-posting", async (req, res) => {
+  let {company, role, location, description} = req.body;
+
+  let extractedSkills = extractSkills(description);
+
+  const jobPosting = new JobPosting({
+    company : company,
+    role : role,
+    location : location,
+    description : description,
+    extractedSkills : extractedSkills,
+  });
+
+  await jobPosting.save();
+
+  res.redirect("job-postings");
+});
+
+app.get("/job-postings", async (req, res) => {
+  const jobs = await JobPosting.find({}).sort({createdAt : -1});
+
+  res.render("job-postings", {jobs});
+});
+
+app.get("/industry-demand", async (req, res) => {
+  const jobs = await JobPosting.find({});
+
+  const industryDemand = calculateIndustryDemand(jobs);
+
+  res.render("industry-demand", {industryDemand, totalJobs : jobs.length});
+});
+
+// live analysis 
+app.get("/live-analysis", async (req, res) => {
+
+  const jobs = await JobPosting.find({});
+
+  const industryDemand = calculateIndustryDemand(jobs);
+
+  const skillData = await SkillDemand.findOne({});
+
+  if (!skillData) {
+    return res.send("No curriculum data found.");
+  }
+
+  const gaps = calculateLiveSkillGaps(industryDemand, skillData.currentCurriculum);
+
+  res.render("live-analysis",{
+    industryDemand,
+    gaps,
+    data : skillData,
+    totalJobs : jobs.length
+  });
 });
 
 app.listen(8080, (req, res) => {
