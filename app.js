@@ -209,6 +209,166 @@ function calculateLiveSkillGaps(industryDemand, currentCurriculum) {
   return gaps.sort((a, b) => b.demand - a.demand);
 }
 
+function normalizeLocation(value = "") {
+  return value.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function normalizeRole(value = "") {
+  return value.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+const studyModules = {
+  javascript: {
+    durationWeeks: 2,
+    topics: ["ES6+ syntax", "Asynchronous programming", "Error handling"],
+    project: "Build a browser-based task tracker"
+  },
+  react: {
+    durationWeeks: 2,
+    topics: ["Components and props", "State and hooks", "API integration"],
+    project: "Build a role-recommendation dashboard"
+  },
+  "node.js": {
+    durationWeeks: 2,
+    topics: ["Express routes", "REST APIs", "Validation and error handling"],
+    project: "Build a job-posting REST API"
+  },
+  mongodb: {
+    durationWeeks: 1,
+    topics: ["Schema design", "Queries", "Indexes"],
+    project: "Store and search job records"
+  },
+  typescript: {
+    durationWeeks: 1,
+    topics: ["Types and interfaces", "Generics", "Typed API responses"],
+    project: "Convert an existing JavaScript module to TypeScript"
+  },
+  docker: {
+    durationWeeks: 1,
+    topics: ["Images and containers", "Dockerfiles", "Environment configuration"],
+    project: "Containerize a web application"
+  },
+  aws: {
+    durationWeeks: 2,
+    topics: ["Cloud fundamentals", "Application deployment", "Monitoring and security"],
+    project: "Deploy a web application to AWS"
+  },
+  python: {
+    durationWeeks: 2,
+    topics: ["Python syntax", "Data handling", "Reusable modules"],
+    project: "Build a job-data analysis script"
+  },
+  sql: {
+    durationWeeks: 1,
+    topics: ["Relational modeling", "Queries and joins", "Aggregations"],
+    project: "Create a job-market reporting database"
+  },
+  git: {
+    durationWeeks: 1,
+    topics: ["Branches", "Pull requests", "Resolving conflicts"],
+    project: "Collaborate on a small feature using Git"
+  }
+};
+
+function calculateLocationInsights(jobs, skillData, location, selectedRole = "") {
+  const locationJobs = jobs.filter(job =>
+    normalizeLocation(job.location) === normalizeLocation(location)
+  );
+
+  const roleGroups = new Map();
+  locationJobs.forEach(job => {
+    const roleKey = normalizeRole(job.role);
+    if (!roleGroups.has(roleKey)) {
+      roleGroups.set(roleKey, { role: job.role, count: 0 });
+    }
+    roleGroups.get(roleKey).count++;
+  });
+
+  const trendingRoles = [...roleGroups.values()]
+    .map(item => ({
+      ...item,
+      demandPercentage: locationJobs.length
+        ? Math.round((item.count / locationJobs.length) * 100)
+        : 0
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  const roleJobs = selectedRole
+    ? locationJobs.filter(job => normalizeRole(job.role) === normalizeRole(selectedRole))
+    : locationJobs;
+  const skillGroups = new Map();
+
+  roleJobs.forEach(job => {
+    const skillsInJob = new Set(job.extractedSkills.map(skill => skill.toLowerCase()));
+    skillsInJob.forEach(skillKey => {
+      const displaySkill = job.extractedSkills.find(
+        skill => skill.toLowerCase() === skillKey
+      );
+      if (!skillGroups.has(skillKey)) {
+        skillGroups.set(skillKey, { skill: displaySkill, count: 0 });
+      }
+      skillGroups.get(skillKey).count++;
+    });
+  });
+
+  const skills = [...skillGroups.values()]
+    .map(item => ({
+      ...item,
+      demandPercentage: roleJobs.length
+        ? Math.round((item.count / roleJobs.length) * 100)
+        : 0
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  const districtCourses = skillData.filter(data =>
+    normalizeLocation(data.district) === normalizeLocation(location)
+  );
+  const availableCourses = districtCourses.length ? districtCourses : skillData;
+  const requiredSkills = skills.map(item => item.skill);
+  const recommendedCourse = availableCourses
+    .map(course => {
+      const curriculum = new Set(course.currentCurriculum.map(skill => skill.toLowerCase()));
+      const coveredSkills = requiredSkills.filter(skill => curriculum.has(skill.toLowerCase()));
+      return {
+        ...course.toObject(),
+        coveredSkills,
+        missingSkills: requiredSkills.filter(skill => !curriculum.has(skill.toLowerCase())),
+        coveragePercentage: requiredSkills.length
+          ? Math.round((coveredSkills.length / requiredSkills.length) * 100)
+          : 0
+      };
+    })
+    .sort((a, b) => b.coveragePercentage - a.coveragePercentage)[0] || null;
+
+  const missingSkills = recommendedCourse
+    ? recommendedCourse.missingSkills
+    : requiredSkills;
+  const studyPlan = missingSkills.map((skill, index) => {
+    const module = studyModules[skill.toLowerCase()] || {
+      durationWeeks: 1,
+      topics: [`${skill} fundamentals`, `${skill} practical usage`],
+      project: `Build a small project using ${skill}`
+    };
+    return {
+      phase: index + 1,
+      skill,
+      ...module
+    };
+  });
+
+  return {
+    location,
+    selectedRole,
+    totalJobs: locationJobs.length,
+    roleJobsCount: roleJobs.length,
+    trendingRoles,
+    skills,
+    recommendedCourse,
+    studyPlan,
+    hasLocationData: locationJobs.length > 0
+  };
+}
+
 app.get("/", (req, res) => {
   res.send("rout is working");
 });
@@ -372,6 +532,24 @@ app.get("/live-analysis", async (req, res) => {
     data : skillData,
     totalJobs : jobs.length
   });
+});
+
+app.get("/location-insights", (req, res) => {
+  res.render("location-insights", {
+    insights: null,
+    location: "",
+    selectedRole: ""
+  });
+});
+
+app.post("/location-insights", async (req, res) => {
+  const location = req.body.location || "";
+  const selectedRole = req.body.role || "";
+  const jobs = await JobPosting.find({});
+  const skillData = await SkillDemand.find({});
+  const insights = calculateLocationInsights(jobs, skillData, location, selectedRole);
+
+  res.render("location-insights", { insights, location, selectedRole });
 });
 
 app.listen(8080, (req, res) => {
