@@ -1,0 +1,95 @@
+<% layout('layouts/boilerplate') %>
+
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1>District Training Plan</h1>
+
+        <p class="text-muted">Data-driven training recommendations based on industry demand</p>
+    </div>
+
+    <!-- DISTRICT INFORMATION -->
+     <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h3><%= trainingPlan.district %></h3>
+
+            <p>Course : <strong><%= trainingPlan.course %></strong></p>
+
+            <p>Job Postings Analysed : <strong><%= totalJobs %></strong></p>
+
+            <span class="badge bg-danger"><%= trainingPlan.trainingLevel %></span>
+        </div>
+     </div>
+
+
+    <!-- SKILLS TO TRAIN -->
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h3>Skills to Prioritize</h3>
+
+            <% if(trainingPlan.skillsToTrain.length == 0) { %>
+                <div class="alert alert-success mt-3">No major skill gaps detected.</div>
+            <%} else {%>
+                <div class="row mt-3">
+                    <% gaps.forEach(gap => {%>
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5><%= gap.skill %></h5>
+
+                                     <p>Demand : <strong><%= gap.demand %>%</strong></p>
+
+                                     <% if(gap.priority === "High") { %>
+                                        <span class="badge bg-danger">High Priority</span>
+                                     <%} else if(gap.priority == "Medium") {%>
+                                        <span class="badge bg-warning text-dark">Medium Priority</span>
+                                     <%} else {%>
+                                        <span class="badge bg-secondary">Low Priority</span>
+                                     <%}%>
+                                </div>
+                            </div>
+                        </div>
+                    <%})%>
+                </div>
+            <%}%>
+        </div>
+    </div>
+
+
+    <!-- TRAINERS -->
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h3>Trainer Requirements</h3>
+
+            <% if(trainingPlan.trainerRequirements.length == 0) { %>
+                <p class="text-muted">No additional trainer requirements identified.</p>
+            <% } else { %>
+                <ul class="list-group mt-3">
+                    <% trainingPlan.trainerRequirements.forEach(trainer => { %>
+                        <li class="list-group-item"><%= trainer %></li>
+                    <% }) %>
+                </ul>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- EQUIPMENT -->
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h3>Equipment Requirements</h3>
+
+            <%if(trainingPlan.equipmentRequirements.length == 0) {%>
+                <p class="text-muted">No additional equipment requirements identified.</p>
+            <%} else {%>
+                <ul class="list-group mt-3">
+                    <% trainingPlan.equipmentRequirements.forEach(equipment => {%>
+                        <li class="list-group-item"><%= equipment %></li>
+                    <% }) %>
+                </ul>
+            <%}%>
+        </div>
+    </div>
+</div>

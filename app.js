@@ -6,6 +6,7 @@ const engine = require("ejs-mate");
 const SkillDemand = require("./models/skillDemand");
 const EmployerFeedback = require("./models/employerFeedback");
 const JobPosting = require("./models/jobPosting");
+const PlacementOutcome = require("./models/placementOutcome");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -149,6 +150,7 @@ function extractSkills(description) {
     return foundSkills;
 }
 
+
 // Calcalute industry demand by the system
 function calculateIndustryDemand(jobs) {
   const totalJobs = jobs.length;
@@ -181,13 +183,13 @@ function calculateLiveSkillGaps(industryDemand, currentCurriculum) {
 
   const curriculumSet = new Set(
     currentCurriculum.map(skill => skill.toLowerCase())
-  )
+  );
 
   const gaps = [];
 
   for(let skill in industryDemand) {
     // if skill not in current curriculum
-    if(!curriculumSet.has(skill)) {
+    if(!curriculumSet.has(skill.toLowerCase())) {
       let priority;
 
       if(industryDemand[skill] >= 60) {
@@ -207,6 +209,88 @@ function calculateLiveSkillGaps(industryDemand, currentCurriculum) {
   }
 
   return gaps.sort((a, b) => b.demand - a.demand);
+}
+
+// Distrcit training plan
+function generateDistrictTrainingPlan(gaps, district, course) {
+
+  const highPriority = gaps.filter(gap => 
+    gap.priority == "High"
+  );
+
+  const mediumPriority = gaps.filter(gap => 
+    gap.priority == "Medium"
+  );
+
+  let trainingLevel;
+
+  if(highPriority.length >= 2) { // which is in high priority that will be much more training
+    trainingLevel = "High Training Priority";
+  } else if(highPriority.length > 0 || mediumPriority.length > 0) {
+    trainingLevel = "Moderate Training Priority";
+  } else {
+    trainingLevel = "Low Training Priority";
+  }
+
+  const skillsToTrain = gaps.map(gap => gap.skill); // What all skills are their to train
+
+  let trainerRequirements = []; // how many trainers do we actually want
+
+  const skillCategories = {
+    "React": "Modern Web Development Trainer",
+    "JavaScript": "Modern Web Development Trainer",
+    "TypeScript": "Modern Web Development Trainer",
+    "AWS": "Cloud & DevOps Trainer",
+    "Docker": "Cloud & DevOps Trainer",
+    "Kubernetes": "Cloud & DevOps Trainer",
+    "Python": "Python Development Trainer",
+    "SQL": "Database Trainer"
+};
+
+  gaps.forEach(gap => {
+    if (skillCategories[gap.skill]) {
+      trainerRequirements.push(skillCategories[gap.skill]);
+    }
+  });
+
+  trainerRequirements = [...new Set(trainerRequirements)]; // For remove the duplicates
+
+  let equipmentRequirements = [];
+
+  const skillEquipment = {
+    "React": "Modern computers with development environment",
+    "JavaScript": "Modern computers with development environment",
+    "TypeScript": "Modern computers with development environment",
+
+    "AWS": "Cloud-enabled computer systems with reliable internet",
+    "Azure": "Cloud-enabled computer systems with reliable internet",
+    "Docker": "Modern computers with virtualization support",
+    "Kubernetes": "Modern computers with virtualization support",
+
+    "Python": "Modern computers with Python development environment",
+    "TensorFlow": "GPU-enabled systems for AI/ML training",
+
+    "SQL": "Database-enabled computer systems",
+    "MongoDB": "Database-enabled computer systems"
+};
+
+
+  gaps.forEach(gap => {
+    if (skillEquipment[gap.skill]) {
+      equipmentRequirements.push(skillEquipment[gap.skill]);
+    }
+  });
+
+  equipmentRequirements = [...new Set(equipmentRequirements)];
+
+  return {
+    district,
+    course,
+    trainingLevel,
+    skillsToTrain,
+    trainerRequirements,
+    equipmentRequirements
+  };
 }
 
 app.get("/", (req, res) => {
@@ -373,6 +457,63 @@ app.get("/live-analysis", async (req, res) => {
     totalJobs : jobs.length
   });
 });
+
+app.get("/district-plan", async (req, res) => {
+  const jobs = await JobPosting.find({});
+
+  const industryDemand = calculateIndustryDemand(jobs);
+
+  const skillData = await SkillDemand.findOne({});
+
+  if (!skillData || !Array.isArray(skillData.currentCurriculum)) {
+    return res.send("No curriculum data found.");
+  }
+
+  const gaps = calculateLiveSkillGaps(industryDemand, skillData.currentCurriculum);
+
+  const trainingPlan = generateDistrictTrainingPlan(gaps, skillData.district, skillData.course);
+
+  res.render("district-plan", {
+    trainingPlan,
+    industryDemand,
+    gaps,
+    totalJobs: jobs.length
+  });
+});
+
+// PLacement feedback
+app.get("/placement-outcome", (req, res) => {
+  res.render("placement-outcome");
+});
+
+app.post("/placement-outcome", async (req, res) => {
+  let {district, course, studentsTrained, studentsCompleted, studentsPlaced, skillsUsed, employerSatisfaction} = req.body;
+
+  const skillList = skillsUsed ? skillsUsed
+      .split(",")
+      .map(skill => skill.trim())
+      .filter(skill => skill !== "") : [];
+
+  const placementOutcome = new PlacementOutcome({
+    district,
+    course,
+    studentsTrained: Number(studentsTrained),
+    studentsCompleted: Number(studentsCompleted),
+    studentsPlaced: Number(studentsPlaced),
+    averageSalary: averageSalary ? Number(averageSalary) : undefined,
+    skillsUsed: skillList,
+    employerSatisfaction : employerSatisfaction ? Number(employerSatisfaction) : undefined
+  });
+  await PlacementOutcome.save();
+
+  res.redirect("/placement-outcomes");
+});
+
+app.get("/placement-outcomes", async (req, res) => {
+  const outcomes = await PlacementOutcomes.find({});
+  
+  res.render("placement-outcomes", outcomes);
+})
 
 app.listen(8080, (req, res) => {
     console.log("app is listening your port");
