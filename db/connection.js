@@ -1,23 +1,11 @@
-const path = require("path");
-const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-
-// Ensure environment variables are loaded if connection.js is called directly
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
-
 const { MONGO_URI } = require("../backend/config/environment");
 
 let isConnected = false;
 
-async function connectDB(uri = process.env.MONGO_URI || MONGO_URI) {
+async function connectDB(uri = MONGO_URI) {
   if (isConnected) {
     return mongoose.connection;
-  }
-
-  if (!uri) {
-    throw new Error(
-      "[Database] MONGO_URI is not defined. Please set MONGO_URI in your .env file."
-    );
   }
 
   try {
