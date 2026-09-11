@@ -1,0 +1,537 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container py-4">
+  <!-- Prototype Header & Breadcrumb -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="/home" class="text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="/skills" class="text-decoration-none">Skills & Curriculum</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Oversupplied Courses</li>
+      </ol>
+    </nav>
+    <div>
+      <span class="badge bg-warning text-dark border px-3 py-2">
+        🧪 Prototype Simulation Mode &bull; Cross-Platform Aggregator
+      </span>
+    </div>
+  </div>
+
+  <!-- Hero Banner -->
+  <div class="p-4 p-md-5 mb-4 rounded-4 bg-dark text-white shadow">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <span class="badge bg-danger px-3 py-2 mb-3 fs-6">
+          📉 Market Saturation & Redundancy Intelligence
+        </span>
+        <h1 class="display-6 fw-bold text-white mb-2">Top 10 Oversupplied Courses</h1>
+        <p class="lead text-light mb-3" style="opacity: 0.9;">
+          Cross-platform analysis synthesizing course offerings, student enrollment volume, and active hiring demand
+          from <strong>Coursera</strong>, <strong>Udemy</strong>, and <strong>LinkedIn Learning</strong> to pinpoint courses that
+          suffer from extreme market oversaturation and low hiring necessity.
+        </p>
+        <div class="d-flex flex-wrap gap-2 text-white-50 small">
+          <span><strong class="text-white">Platforms Crawled:</strong> Coursera, Udemy, LinkedIn Learning, edX</span>
+          <span>&bull;</span>
+          <span><strong class="text-white">Listing Cap:</strong> Exactly 10 Saturated Curricula</span>
+          <span>&bull;</span>
+          <span><strong class="text-white">Last Analyzed:</strong> <%= summary.sampleAnalysisTimestamp %></span>
+        </div>
+      </div>
+      <div class="col-lg-4 mt-4 mt-lg-0 text-center text-lg-end">
+        <div class="p-3 rounded-3 bg-secondary bg-opacity-25 border border-secondary text-start">
+          <div class="small text-uppercase text-warning fw-bold mb-1">Curriculum Diagnostic</div>
+          <div class="fs-4 fw-bold text-white mb-1"><%= summary.candidatePoolRatioAvg %></div>
+          <div class="small text-light opacity-75">Average candidate-to-open-job ratio across these 10 oversupplied categories.</div>
+          <hr class="my-2 border-secondary">
+          <div class="d-flex justify-content-between text-light small">
+            <span>Avg Saturation:</span>
+            <strong class="text-danger"><%= summary.averageSaturationRate %></strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Platform Summary Metric Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="card h-100 border-0 shadow-sm bg-white">
+        <div class="card-body p-3">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="text-muted small text-uppercase fw-semibold">Catalog Scanned</span>
+            <span class="fs-4">🌐</span>
+          </div>
+          <h3 class="fw-bold mb-0 text-primary"><%= summary.totalCoursesAnalyzed %></h3>
+          <small class="text-muted">Courses monitored across 4 major platforms</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="card h-100 border-0 shadow-sm bg-white">
+        <div class="card-body p-3">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="text-muted small text-uppercase fw-semibold">Enrolled Learners</span>
+            <span class="fs-4">👥</span>
+          </div>
+          <h3 class="fw-bold mb-0 text-success"><%= summary.totalLearnersTracked %></h3>
+          <small class="text-muted">Certificate seekers in tracked categories</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="card h-100 border-0 shadow-sm bg-white">
+        <div class="card-body p-3">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="text-muted small text-uppercase fw-semibold">Avg Saturation Rate</span>
+            <span class="fs-4">⚠️</span>
+          </div>
+          <h3 class="fw-bold mb-0 text-danger"><%= summary.averageSaturationRate %></h3>
+          <small class="text-muted">High applicant surplus vs. hiring capacity</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class="card h-100 border-0 shadow-sm bg-white">
+        <div class="card-body p-3">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="text-muted small text-uppercase fw-semibold">Curriculum Status</span>
+            <span class="fs-4">🛑</span>
+          </div>
+          <h3 class="fw-bold mb-0 text-warning text-dark">Top 10 Flagged</h3>
+          <small class="text-muted">Superfluous & low-necessity courses</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Search and Filter Bar -->
+  <div class="card mb-4 shadow-sm border">
+    <div class="card-body p-3">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-5">
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0">🔍</span>
+            <input
+              type="text"
+              id="courseSearchInput"
+              class="form-control border-start-0"
+              placeholder="Search among the 10 courses by title, skill, or reason..."
+              aria-label="Search courses"
+            >
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="d-flex gap-1 flex-wrap align-items-center">
+            <span class="small text-muted me-1">Platform:</span>
+            <button class="btn btn-sm btn-primary platform-filter active" data-platform="all">All</button>
+            <button class="btn btn-sm btn-outline-secondary platform-filter" data-platform="coursera">Coursera</button>
+            <button class="btn btn-sm btn-outline-secondary platform-filter" data-platform="udemy">Udemy</button>
+            <button class="btn btn-sm btn-outline-secondary platform-filter" data-platform="linkedinLearning">LinkedIn</button>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <select id="courseSortSelect" class="form-select form-select-sm" aria-label="Sort courses">
+            <option value="rank">Sort by: Default Severity Rank</option>
+            <option value="saturation">Sort by: Highest Saturation %</option>
+            <option value="necessity">Sort by: Lowest Necessity Score</option>
+            <option value="openings">Sort by: Fewest Job Openings</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert explaining Why These Courses are Oversupplied -->
+  <div class="alert alert-warning border-warning d-flex align-items-start gap-3 shadow-sm mb-4" role="alert">
+    <span class="fs-3">💡</span>
+    <div>
+      <h6 class="alert-heading fw-bold mb-1">Why are these 10 courses considered "Oversupplied & Not Necessary"?</h6>
+      <p class="mb-0 small text-dark">
+        These courses teach commoditized, entry-level syntax or superficial templates that automated AI tools and no-code platforms now handle natively.
+        Because millions of graduates hold identical beginner certificates while actual job vacancies require enterprise architecture, domain depth, and automated testing,
+        spending educational funding and student time on these specific 10 curricula produces minimal employment outcomes.
+      </p>
+    </div>
+  </div>
+
+  <!-- Courses Container (Exactly 10 Items) -->
+  <div id="coursesListContainer" class="d-flex flex-column gap-4">
+    <% courses.forEach((course) => { %>
+      <div
+        class="card course-item shadow-sm border position-relative overflow-hidden"
+        data-id="<%= course.id %>"
+        data-rank="<%= course.rank %>"
+        data-title="<%= course.title.toLowerCase() %>"
+        data-category="<%= course.category.toLowerCase() %>"
+        data-reason="<%= (course.whyOversupplied + ' ' + course.whyNotNecessary).toLowerCase() %>"
+        data-saturation="<%= course.oversupplyPercentage %>"
+        data-necessity="<%= course.marketNecessityScore %>"
+        data-openings="<%= course.activeJobOpenings %>"
+      >
+        <!-- Top Status Bar -->
+        <div class="card-header bg-light d-flex flex-wrap justify-content-between align-items-center py-2 px-3 gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-dark fs-6 px-2 py-1">Rank #<%= course.rank %></span>
+            <span class="badge bg-secondary"><%= course.category %></span>
+            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">
+              <%= course.saturationLevel %>
+            </span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="small text-muted">Market Necessity:</span>
+            <span class="badge <%= course.marketNecessityScore <= 10 ? 'bg-danger' : (course.marketNecessityScore <= 15 ? 'bg-warning text-dark' : 'bg-secondary') %>">
+              <%= course.marketNecessityScore %>/100 &bull; <%= course.necessityStatus %>
+            </span>
+          </div>
+        </div>
+
+        <div class="card-body p-4">
+          <!-- Course Title & Main Metrics -->
+          <div class="row g-3 mb-3">
+            <div class="col-lg-8">
+              <h3 class="h4 fw-bold text-dark mb-1"><%= course.title %></h3>
+              <div class="text-danger small fw-semibold mb-2">
+                <span class="badge bg-danger me-1">Root Cause</span> <%= course.primaryRedundancyDriver %>
+              </div>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+              <div class="d-inline-block text-start p-2 rounded bg-light border">
+                <div class="small text-muted">Supply Saturation</div>
+                <div class="fs-4 fw-bold text-danger"><%= course.oversupplyPercentage %>%</div>
+              </div>
+              <div class="d-inline-block text-start p-2 rounded bg-light border ms-1">
+                <div class="small text-muted">Candidate Ratio</div>
+                <div class="fs-4 fw-bold text-dark"><%= course.candidateToJobRatio %></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Saturation Visual Meter -->
+          <div class="mb-4">
+            <div class="d-flex justify-content-between small text-muted mb-1">
+              <span>Market Oversupply Gauge</span>
+              <span class="fw-bold text-danger"><%= course.oversupplyPercentage %>% Saturated</span>
+            </div>
+            <div class="progress" style="height: 10px;">
+              <div
+                class="progress-bar bg-danger"
+                role="progressbar"
+                style="width: <%= course.oversupplyPercentage %>%;"
+                aria-valuenow="<%= course.oversupplyPercentage %>"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              ></div>
+            </div>
+          </div>
+
+          <div class="row g-4">
+            <!-- Left Column: Diagnostic Analysis -->
+            <div class="col-md-7 border-end-md">
+              <div class="mb-3">
+                <h6 class="fw-bold text-dark d-flex align-items-center gap-1 mb-1">
+                  <span>📊</span> Why This Course Is Oversupplied:
+                </h6>
+                <p class="text-muted small mb-2"><%= course.whyOversupplied %></p>
+              </div>
+
+              <div class="mb-3">
+                <h6 class="fw-bold text-danger d-flex align-items-center gap-1 mb-1">
+                  <span>🚫</span> Why It's Not Necessary in Current Industry:
+                </h6>
+                <p class="text-muted small mb-0"><%= course.whyNotNecessary %></p>
+              </div>
+
+              <div class="d-flex gap-2 align-items-center mt-3 pt-2 border-top">
+                <span class="badge bg-light text-dark border">
+                  <strong><%= course.totalLearners %></strong> Total Certified Pool
+                </span>
+                <span class="badge bg-light text-dark border">
+                  <strong><%= course.activeJobOpenings.toLocaleString() %></strong> Active Entry Openings
+                </span>
+              </div>
+            </div>
+
+            <!-- Right Column: Platforms Scanned & High-Demand Pivot -->
+            <div class="col-md-5">
+              <div class="p-3 bg-light rounded-3 border mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="small fw-bold text-uppercase text-secondary">Cross-Platform Audit Data</span>
+                  <span class="badge bg-info text-dark">Simulated Crawl</span>
+                </div>
+                <div class="d-flex flex-column gap-2 small">
+                  <div class="d-flex justify-content-between align-items-center border-bottom pb-1">
+                    <span class="text-primary fw-semibold">Coursera:</span>
+                    <span><strong><%= course.platforms.coursera.courses %></strong> courses &bull; <strong><%= course.platforms.coursera.learners %></strong> learners</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center border-bottom pb-1">
+                    <span class="text-danger fw-semibold">Udemy:</span>
+                    <span><strong><%= course.platforms.udemy.courses %></strong> courses &bull; <strong><%= course.platforms.udemy.learners %></strong> learners</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-info text-dark fw-semibold">LinkedIn Learning:</span>
+                    <span><strong><%= course.platforms.linkedinLearning.courses %></strong> courses &bull; <strong><%= course.platforms.linkedinLearning.learners %></strong> learners</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recommended High-Demand Pivot -->
+              <div class="p-3 rounded-3 border border-success bg-success bg-opacity-10">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="badge bg-success text-white">Recommended Market Pivot</span>
+                  <span class="small text-success fw-bold">Salary: <%= course.recommendedPivot.salaryAdvantage %></span>
+                </div>
+                <div class="small fw-bold text-dark mb-1"><%= course.recommendedPivot.skill %></div>
+                <div class="d-flex justify-content-between text-muted small">
+                  <span>Pivot Demand Intensity:</span>
+                  <strong class="text-success"><%= course.recommendedPivot.marketDemandScore %>% High</strong>
+                </div>
+              </div>
+
+              <!-- Button to view deep telemetry modal -->
+              <div class="mt-3 text-end">
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-dark view-telemetry-btn"
+                  data-bs-toggle="modal"
+                  data-bs-target="#telemetryModal"
+                  data-course='<%- JSON.stringify(course) %>'
+                >
+                  Inspect Platform Breakdown &rarr;
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- Empty state if search returns no courses -->
+  <div id="noCoursesFound" class="alert alert-secondary text-center p-5 mt-4 d-none">
+    <div class="fs-1 mb-2">🔍</div>
+    <h5>No matching courses found in the Top 10 list</h5>
+    <p class="text-muted mb-3">Try adjusting your search keywords or platform filters.</p>
+    <button id="resetFiltersBtn" class="btn btn-sm btn-outline-primary">Reset Filters</button>
+  </div>
+
+  <!-- Policy Advisory for State & District Boards -->
+  <div class="card border-primary mt-5 shadow-sm">
+    <div class="card-body p-4">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h5 class="fw-bold text-primary mb-1">🏛️ Curriculum Modernization & Budget Directive</h5>
+          <p class="text-muted small mb-0">
+            For academic planning councils, vocational polytechnics, and district skill development centers:
+            <strong>Discontinue or de-prioritize course tracks in these 10 oversupplied categories.</strong>
+            Redirect faculty training budgets and laboratory equipment towards the recommended high-demand pivots
+            identified in the live gap analysis.
+          </p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+          <a href="/skill-gap" class="btn btn-outline-primary me-2">View Skill Gaps</a>
+          <a href="/district-plan" class="btn btn-primary">Generate District Plan</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Cross-Platform Telemetry Inspection -->
+<div class="modal fade" id="telemetryModal" tabindex="-1" aria-labelledby="telemetryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="telemetryModalLabel">Platform Deep-Dive Telemetry</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4" id="telemetryModalContent">
+        <!-- Injected via JavaScript -->
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close Inspection</button>
+        <a href="/recommendations" class="btn btn-primary">View Recommended Curriculum</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Client-side Interactive Prototype Script -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("courseSearchInput");
+  const platformButtons = document.querySelectorAll(".platform-filter");
+  const sortSelect = document.getElementById("courseSortSelect");
+  const coursesContainer = document.getElementById("coursesListContainer");
+  const noCoursesFound = document.getElementById("noCoursesFound");
+  const resetFiltersBtn = document.getElementById("resetFiltersBtn");
+
+  let activePlatform = "all";
+
+  function filterAndSortCourses() {
+    const query = (searchInput.value || "").trim().toLowerCase();
+    const courseCards = Array.from(document.querySelectorAll(".course-item"));
+    let visibleCount = 0;
+
+    courseCards.forEach(card => {
+      const title = card.dataset.title || "";
+      const category = card.dataset.category || "";
+      const reason = card.dataset.reason || "";
+      const matchesQuery = !query || title.includes(query) || category.includes(query) || reason.includes(query);
+
+      let matchesPlatform = true;
+      if (activePlatform !== "all") {
+        // All 10 courses have presence on all 3 platforms, but we can highlight or filter
+        matchesPlatform = true;
+      }
+
+      if (matchesQuery && matchesPlatform) {
+        card.classList.remove("d-none");
+        visibleCount++;
+      } else {
+        card.classList.add("d-none");
+      }
+    });
+
+    if (visibleCount === 0) {
+      noCoursesFound.classList.remove("d-none");
+    } else {
+      noCoursesFound.classList.add("d-none");
+    }
+
+    // Sort visible cards
+    const sortVal = sortSelect.value;
+    const sortedCards = courseCards.sort((a, b) => {
+      if (sortVal === "saturation") {
+        return Number(b.dataset.saturation) - Number(a.dataset.saturation);
+      } else if (sortVal === "necessity") {
+        return Number(a.dataset.necessity) - Number(b.dataset.necessity);
+      } else if (sortVal === "openings") {
+        return Number(a.dataset.openings) - Number(b.dataset.openings);
+      } else {
+        // default rank
+        return Number(a.dataset.rank) - Number(b.dataset.rank);
+      }
+    });
+
+    sortedCards.forEach(card => coursesContainer.appendChild(card));
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", filterAndSortCourses);
+  }
+
+  platformButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      platformButtons.forEach(b => {
+        b.classList.remove("btn-primary", "active");
+        b.classList.add("btn-outline-secondary");
+      });
+      btn.classList.remove("btn-outline-secondary");
+      btn.classList.add("btn-primary", "active");
+      activePlatform = btn.dataset.platform;
+      filterAndSortCourses();
+    });
+  });
+
+  if (sortSelect) {
+    sortSelect.addEventListener("change", filterAndSortCourses);
+  }
+
+  if (resetFiltersBtn) {
+    resetFiltersBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      sortSelect.value = "rank";
+      platformButtons[0].click();
+      filterAndSortCourses();
+    });
+  }
+
+  // Modal telemetry population
+  const telemetryButtons = document.querySelectorAll(".view-telemetry-btn");
+  const modalContent = document.getElementById("telemetryModalContent");
+  const modalTitle = document.getElementById("telemetryModalLabel");
+
+  telemetryButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      try {
+        const course = JSON.parse(btn.getAttribute("data-course"));
+        modalTitle.textContent = `Telemetry: ${course.title}`;
+
+        modalContent.innerHTML = `
+          <div class="alert alert-danger mb-3 py-2 px-3">
+            <strong>Oversupply Severity:</strong> ${course.saturationLevel} (${course.oversupplyPercentage}%) &bull;
+            <strong>Necessity Score:</strong> ${course.marketNecessityScore}/100 (${course.necessityStatus})
+          </div>
+
+          <h6 class="fw-bold mb-2">Simulated Multi-Platform Data Signals:</h6>
+          <div class="table-responsive mb-3">
+            <table class="table table-bordered table-sm align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Platform</th>
+                  <th>Catalog Offerings</th>
+                  <th>Certified / Enrolled</th>
+                  <th>Avg Rating</th>
+                  <th>Market Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="fw-bold text-primary">Coursera</td>
+                  <td>${course.platforms.coursera.courses} courses</td>
+                  <td>${course.platforms.coursera.learners}</td>
+                  <td>${course.platforms.coursera.avgRating} ★</td>
+                  <td><span class="badge bg-warning text-dark">High Enrollment</span></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-danger">Udemy</td>
+                  <td>${course.platforms.udemy.courses} courses</td>
+                  <td>${course.platforms.udemy.learners}</td>
+                  <td>${course.platforms.udemy.avgRating} ★</td>
+                  <td><span class="badge bg-danger">Severe Saturation</span></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold text-info text-dark">LinkedIn Learning</td>
+                  <td>${course.platforms.linkedinLearning.courses} courses</td>
+                  <td>${course.platforms.linkedinLearning.learners}</td>
+                  <td>${course.platforms.linkedinLearning.avgRating} ★</td>
+                  <td><span class="badge bg-secondary">Declining Recruiter Interest</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card bg-light border mb-3">
+            <div class="card-body p-3">
+              <h6 class="fw-bold text-dark mb-1">Labour Market Absorption Ratio</h6>
+              <p class="small text-muted mb-2">
+                For every <strong>1 open entry-level vacancy</strong>, there are approximately
+                <strong>${course.candidateToJobRatio.split(":")[0].trim()} applicants</strong> holding certificates in this course.
+              </p>
+              <div class="d-flex justify-content-between small">
+                <span>Active Job Vacancies: <strong>${Number(course.activeJobOpenings).toLocaleString()}</strong></span>
+                <span>Candidate Surplus Pool: <strong>${course.totalLearners}</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 rounded border border-success bg-success bg-opacity-10">
+            <h6 class="fw-bold text-success mb-1">Strategic Curriculum Replacement:</h6>
+            <p class="small mb-1"><strong>Replace with:</strong> ${course.recommendedPivot.skill}</p>
+            <div class="small text-muted">
+              Projected hiring demand index is <strong>${course.recommendedPivot.marketDemandScore}%</strong>
+              with an estimated salary advantage of <strong>${course.recommendedPivot.salaryAdvantage}</strong> over this saturated curriculum.
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        console.error("Telemetry modal error:", err);
+      }
+    });
+  });
+});
+</script>

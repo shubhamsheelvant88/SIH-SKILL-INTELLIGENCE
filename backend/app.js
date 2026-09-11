@@ -9,6 +9,7 @@ const employerRoutes = require("./features/employers/employer.routes");
 const jobRoutes = require("./features/jobs/job.routes");
 const districtRoutes = require("./features/district/district.routes");
 const placementRoutes = require("./features/placement/placement.routes");
+const courseRoutes = require("./features/courses/courses.routes");
 
 // Middlewares
 const errorHandler = require("./middlewares/errorHandler");
@@ -33,6 +34,7 @@ app.use("/", employerRoutes);
 app.use("/", jobRoutes);
 app.use("/", districtRoutes);
 app.use("/", placementRoutes);
+app.use("/", courseRoutes);
 
 // 404 and global error handlers
 app.use(notFoundHandler);

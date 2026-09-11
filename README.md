@@ -137,6 +137,8 @@ http://localhost:8080
 
 ## 🌟 Core Features
 
+
+
 1. **Dashboard (`/dashboard`)**: Unified KPIs comparing total skills analyzed, current course skills, identified gaps, and top demand areas.
 2. **Curriculum Skill Demand (`/skills`)**: Visual progress indicators of labor-market demand across domains.
 3. **Skill Gap Analysis (`/skill-gap`)**: Automated detection of missing competencies prioritized by market intensity (High, Medium, Low).
@@ -146,3 +148,7 @@ http://localhost:8080
 7. **Employer Validations (`/employer-feedback`, `/employers`, `/validated-gap`)**: Direct corporate verification of needed skillsets.
 8. **District Training Plan (`/district-plan`)**: Operational planning outlining specialized trainer allocations and computer lab equipment requirements.
 9. **Placement Outcomes (`/placement-outcome`, `/placement-outcomes`)**: Empirical measurement of training ROI, completion rates, and average salaries.
+10. **AI analyses - ai will create 'n' questions according to the role in the current industry demand, list in the question section, we will use gemini api (with prompt), options yes/no, skill gaps are identified, is the person suitable for the job role? 
+11. Employee skill rating option: The employee has an option to give rating in the job post list
+12. have rating for the employees(like reputation), what ratings he has given according to that if more number of people have got a job from following these curriculums the employees reputation points increases, and students can follow these employees for their reputation 
+Oversupplied courses analysis
