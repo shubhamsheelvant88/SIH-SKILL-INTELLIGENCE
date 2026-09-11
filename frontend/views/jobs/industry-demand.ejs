@@ -1,0 +1,51 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="display-5 fw-bold mb-1">Live Industry Demand</h1>
+      <p class="text-muted lead mb-0">Aggregate skill percentages synthesized directly from submitted job descriptions</p>
+    </div>
+    <div>
+      <a href="/job-postings" class="btn btn-outline-secondary">&larr; Back to Jobs</a>
+      <a href="/live-analysis" class="btn btn-primary ms-2">Live Analysis &rarr;</a>
+    </div>
+  </div>
+
+  <div class="alert alert-info d-flex align-items-center justify-content-between p-3 mb-4">
+    <div>
+      <span class="fs-5 me-2">📋</span>
+      Total Job Postings Included in Aggregate Sample: <strong><%= totalJobs %></strong>
+    </div>
+    <a href="/job-posting" class="btn btn-sm btn-info text-white">+ Add More Jobs</a>
+  </div>
+
+  <% if (!industryDemand || Object.keys(industryDemand).length === 0) { %>
+    <div class="alert alert-warning text-center p-4">
+      <h4>No Industry Data Available Yet</h4>
+      <p class="mb-3">Submit job descriptions to compute market demand percentages.</p>
+      <a href="/job-posting" class="btn btn-primary">Submit Job</a>
+    </div>
+  <% } else { %>
+    <div class="row g-4">
+      <% Object.entries(industryDemand).sort((a, b) => b[1] - a[1]).forEach(([skill, demand]) => { %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card shadow-sm h-100 p-2 border">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="fw-bold mb-0"><%= skill %></h5>
+                <span class="badge bg-primary fs-6"><%= demand %>%</span>
+              </div>
+              <p class="text-muted small mb-2">Demand across <%= totalJobs %> analyzed jobs</p>
+              <div class="progress">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: <%= demand %>%;" aria-valuenow="<%= demand %>" aria-valuemin="0" aria-valuemax="100">
+                  <%= demand %>%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>

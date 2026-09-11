@@ -1,0 +1,53 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">Industry Skill Demand</h1>
+    <p class="text-muted lead">Labour-market demand metrics across regional course curricula</p>
+  </div>
+
+  <% if (!skillData || skillData.length === 0) { %>
+    <div class="alert alert-info text-center p-4">
+      <h4>No Skill Data Available</h4>
+      <p>Please seed sample data or submit curriculum records.</p>
+    </div>
+  <% } else { %>
+    <% skillData.forEach(data => { %>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h3 class="card-title mb-1"><%= data.course %></h3>
+              <p class="text-muted mb-0"><%= data.district %> &bull; <%= data.sector %></p>
+            </div>
+            <a href="/dashboard" class="btn btn-sm btn-outline-secondary">&larr; Back to Dashboard</a>
+          </div>
+
+          <h5 class="mt-4 mb-3">Tracked Skills & Demand Intensity</h5>
+
+          <div class="row">
+            <% if (data.industryDemand && typeof data.industryDemand === 'object') { %>
+              <% for (const [skill, demand] of Object.entries(data.industryDemand)) { %>
+                <div class="col-md-6 col-lg-4 mb-3">
+                  <div class="card border p-2">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0 fw-bold"><%= skill %></h6>
+                        <span class="badge bg-primary"><%= demand %>%</span>
+                      </div>
+                      <div class="progress">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: <%= demand %>%;" aria-valuenow="<%= demand %>" aria-valuemin="0" aria-valuemax="100">
+                          <%= demand %>%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+</div>

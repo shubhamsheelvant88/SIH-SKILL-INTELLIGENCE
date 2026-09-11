@@ -1,0 +1,106 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">District Training Plan</h1>
+    <p class="text-muted lead">Data-driven training, trainer, and equipment allocation based on local industry demand</p>
+  </div>
+
+  <!-- District & Course Overview -->
+  <div class="card shadow-sm mb-4 border">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <span class="badge bg-secondary mb-2">District Plan</span>
+          <h2 class="fw-bold mb-1"><%= trainingPlan.district %></h2>
+          <p class="text-muted mb-0">Course: <strong><%= trainingPlan.course %></strong> &bull; Total Vacancies Analyzed: <strong><%= totalJobs %></strong></p>
+        </div>
+        <div>
+          <span class="badge <%= trainingPlan.trainingLevel.includes('High') ? 'bg-danger fs-6' : (trainingPlan.trainingLevel.includes('Moderate') ? 'bg-warning text-dark fs-6' : 'bg-success fs-6') %>">
+            <%= trainingPlan.trainingLevel %>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills to Prioritize -->
+  <div class="card shadow-sm mb-4 border">
+    <div class="card-body p-4">
+      <h4 class="fw-bold mb-3">Skills to Prioritize</h4>
+
+      <% if (!trainingPlan.skillsToTrain || trainingPlan.skillsToTrain.length === 0) { %>
+        <div class="alert alert-success mt-3">
+          🎉 No major skill gaps detected in this district course.
+        </div>
+      <% } else { %>
+        <div class="row g-3">
+          <% gaps.forEach(gap => { %>
+            <div class="col-md-6 col-lg-4">
+              <div class="card border p-2">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="fw-bold mb-0"><%= gap.skill %></h5>
+                    <% if (gap.priority === "High") { %>
+                      <span class="badge bg-danger">High</span>
+                    <% } else if (gap.priority === "Medium") { %>
+                      <span class="badge bg-warning text-dark">Medium</span>
+                    <% } else { %>
+                      <span class="badge bg-secondary">Low</span>
+                    <% } %>
+                  </div>
+                  <p class="text-muted small mb-2">Regional Demand: <strong><%= gap.demand %>%</strong></p>
+                  <div class="progress">
+                    <div class="progress-bar <%= gap.priority === 'High' ? 'bg-danger' : 'bg-warning text-dark' %>" role="progressbar" style="width: <%= gap.demand %>%;">
+                      <%= gap.demand %>%
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Trainer Requirements -->
+  <div class="card shadow-sm mb-4 border">
+    <div class="card-body p-4">
+      <h4 class="fw-bold mb-3">👨‍🏫 Trainer Requirements</h4>
+
+      <% if (!trainingPlan.trainerRequirements || trainingPlan.trainerRequirements.length === 0) { %>
+        <p class="text-muted mb-0">No additional specialized trainer requirements identified.</p>
+      <% } else { %>
+        <ul class="list-group">
+          <% trainingPlan.trainerRequirements.forEach(trainer => { %>
+            <li class="list-group-item d-flex align-items-center gap-2">
+              <span class="text-primary">&check;</span>
+              <strong><%= trainer %></strong>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Equipment Requirements -->
+  <div class="card shadow-sm mb-5 border">
+    <div class="card-body p-4">
+      <h4 class="fw-bold mb-3">🖥️ Equipment & Lab Infrastructure Requirements</h4>
+
+      <% if (!trainingPlan.equipmentRequirements || trainingPlan.equipmentRequirements.length === 0) { %>
+        <p class="text-muted mb-0">No specialized equipment requirements identified.</p>
+      <% } else { %>
+        <ul class="list-group">
+          <% trainingPlan.equipmentRequirements.forEach(equipment => { %>
+            <li class="list-group-item d-flex align-items-center gap-2">
+              <span class="text-success">&check;</span>
+              <strong><%= equipment %></strong>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+</div>

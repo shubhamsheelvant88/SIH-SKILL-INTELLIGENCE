@@ -1,0 +1,104 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">Live Labour Market Analysis</h1>
+    <p class="text-muted lead">Real-time gap detection generated dynamically by cross-referencing live job postings</p>
+  </div>
+
+  <% if (!data) { %>
+    <div class="alert alert-warning text-center p-4">
+      <h4>Curriculum Data Missing</h4>
+      <p class="mb-3">Live analysis requires at least one curriculum baseline to compute gaps.</p>
+      <a href="/home" class="btn btn-primary">Return Home</a>
+    </div>
+  <% } else { %>
+    <!-- Target Course Context -->
+    <div class="card shadow-sm mb-4 border">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <span class="badge bg-dark mb-2">Target Course Benchmark</span>
+            <h3 class="fw-bold mb-1"><%= data.course %></h3>
+            <p class="text-muted mb-0"><%= data.district %> &bull; Sector: <%= data.sector %></p>
+          </div>
+          <div class="text-end">
+            <h5 class="text-primary mb-1"><%= totalJobs %></h5>
+            <small class="text-muted">Live Jobs Analyzed</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Industry Demand Extracted From Jobs -->
+    <div class="card shadow-sm mb-4 border">
+      <div class="card-body p-4">
+        <h4 class="fw-bold mb-3">Live Industry Skill Demand</h4>
+
+        <% if (!industryDemand || Object.keys(industryDemand).length === 0) { %>
+          <div class="alert alert-info">No skill demand computed yet. Please add job descriptions.</div>
+        <% } else { %>
+          <div class="row g-3">
+            <% for (let skill in industryDemand) { %>
+              <div class="col-md-6 col-lg-4">
+                <div class="card border p-2">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <h6 class="fw-bold mb-0"><%= skill %></h6>
+                      <span class="badge bg-info text-dark"><%= industryDemand[skill] %>%</span>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar bg-info text-dark" role="progressbar" style="width: <%= industryDemand[skill] %>%;">
+                        <%= industryDemand[skill] %>%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Detected Live Gaps -->
+    <div class="card shadow-sm mb-5 border">
+      <div class="card-body p-4">
+        <h4 class="fw-bold mb-3">Dynamically Detected Skill Gaps</h4>
+
+        <% if (!gaps || gaps.length === 0) { %>
+          <div class="alert alert-success mt-3">
+            🎉 No live skill gaps detected against current curriculum!
+          </div>
+        <% } else { %>
+          <div class="row g-3">
+            <% gaps.forEach(gap => { %>
+              <div class="col-md-6 col-lg-4">
+                <div class="card border p-2">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <h5 class="fw-bold mb-0"><%= gap.skill %></h5>
+                      <% if (gap.priority === "High") { %>
+                        <span class="badge bg-danger">High Priority</span>
+                      <% } else if (gap.priority === "Medium") { %>
+                        <span class="badge bg-warning text-dark">Medium Priority</span>
+                      <% } else { %>
+                        <span class="badge bg-secondary">Low Priority</span>
+                      <% } %>
+                    </div>
+                    <p class="text-muted small mb-2">Demand: <strong><%= gap.demand %>%</strong></p>
+                    <div class="progress">
+                      <div class="progress-bar <%= gap.priority === 'High' ? 'bg-danger' : 'bg-warning text-dark' %>" role="progressbar" style="width: <%= gap.demand %>%;">
+                        <%= gap.demand %>%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  <% } %>
+</div>

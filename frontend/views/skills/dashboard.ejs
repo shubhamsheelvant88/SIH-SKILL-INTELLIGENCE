@@ -1,0 +1,130 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">Skill Intelligence Dashboard</h1>
+    <p class="text-muted lead">Industry demand analysis and curriculum intelligence</p>
+  </div>
+
+  <% if (!skillData || skillData.length === 0) { %>
+    <div class="alert alert-info text-center p-4">
+      <h4>No Curriculum Data Available</h4>
+      <p class="mb-3">Seed the database or initialize curriculum data to populate the dashboard metrics.</p>
+      <a href="/home" class="btn btn-primary">Return Home</a>
+    </div>
+  <% } else { %>
+    <% skillData.forEach(data => { %>
+      <!-- Location & Sector -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <div class="row text-center text-md-start">
+            <div class="col-md-4 mb-2 mb-md-0">
+              <h6 class="text-muted text-uppercase mb-1">District</h6>
+              <h4 class="fw-bold"><%= data.district %></h4>
+            </div>
+            <div class="col-md-4 mb-2 mb-md-0">
+              <h6 class="text-muted text-uppercase mb-1">Sector</h6>
+              <h4 class="fw-bold"><%= data.sector %></h4>
+            </div>
+            <div class="col-md-4">
+              <h6 class="text-muted text-uppercase mb-1">Course</h6>
+              <h4 class="fw-bold"><%= data.course %></h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Metric Cards -->
+      <%
+        const industryCount = (data.industryDemand && typeof data.industryDemand === 'object') ? Object.keys(data.industryDemand).length : 0;
+        const curriculumCount = Array.isArray(data.currentCurriculum) ? data.currentCurriculum.length : 0;
+        const gapsCount = Math.max(0, industryCount - curriculumCount);
+        const topDemand = industryCount > 0 ? Math.max(...Object.values(data.industryDemand).map(Number)) : 0;
+      %>
+      <div class="row g-4 mb-4">
+        <div class="col-md-3">
+          <div class="card shadow-sm h-100 p-2">
+            <div class="card-body">
+              <h6 class="text-muted text-uppercase small">Skills Analysed</h6>
+              <h2 class="fw-bold text-primary"><%= industryCount %></h2>
+              <p class="text-muted mb-0 small">Industry tracked skills</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm h-100 p-2">
+            <div class="card-body">
+              <h6 class="text-muted text-uppercase small">Curriculum Skills</h6>
+              <h2 class="fw-bold text-success"><%= curriculumCount %></h2>
+              <p class="text-muted mb-0 small">Currently taught in course</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm h-100 p-2">
+            <div class="card-body">
+              <h6 class="text-muted text-uppercase small">Skill Gaps</h6>
+              <h2 class="fw-bold text-danger"><%= gapsCount %></h2>
+              <p class="text-muted mb-0 small">Skills missing from syllabus</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="card shadow-sm h-100 p-2">
+            <div class="card-body">
+              <h6 class="text-muted text-uppercase small">Top Demand</h6>
+              <h2 class="fw-bold text-warning"><%= topDemand %>%</h2>
+              <p class="text-muted mb-0 small">Highest skill demand</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Actions -->
+      <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+          <div class="card shadow-sm h-100 card-hover-elevate">
+            <div class="card-body d-flex flex-column">
+              <h4>📊 Industry Demand</h4>
+              <p class="text-muted flex-grow-1">Inspect individual skill demand percentages required by the labour market.</p>
+              <a href="/skills" class="btn btn-primary w-100 mt-2">View Demand</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card shadow-sm h-100 card-hover-elevate">
+            <div class="card-body d-flex flex-column">
+              <h4>🎯 Skill Gap</h4>
+              <p class="text-muted flex-grow-1">Identify skills demanded by industry that are absent from current curriculum.</p>
+              <a href="/skill-gap" class="btn btn-warning w-100 mt-2">Analyse Gaps</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card shadow-sm h-100 card-hover-elevate">
+            <div class="card-body d-flex flex-column">
+              <h4>💡 Recommendations</h4>
+              <p class="text-muted flex-grow-1">Get syllabus update recommendations and practical lab modules.</p>
+              <a href="/recommendations" class="btn btn-success w-100 mt-2">Recommendations</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card shadow-sm h-100 card-hover-elevate">
+            <div class="card-body d-flex flex-column">
+              <h4>⚡ Live Analysis</h4>
+              <p class="text-muted flex-grow-1">Stream real-time demand dynamically extracted from live job postings.</p>
+              <a href="/live-analysis" class="btn btn-dark w-100 mt-2">Live Analysis</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+</div>

@@ -1,0 +1,64 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/home">
+      <span class="fs-4">🎯</span>
+      <span>Skill Intelligence</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/dashboard">Dashboard</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="skillsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Skills & Curriculum
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="skillsDropdown">
+            <li><a class="dropdown-item" href="/skills">Curriculum Skill Demand</a></li>
+            <li><a class="dropdown-item" href="/skill-gap">Skill Gap Analysis</a></li>
+            <li><a class="dropdown-item" href="/recommendations">Curriculum Recommendations</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="jobsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Job Market Intelligence
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="jobsDropdown">
+            <li><a class="dropdown-item" href="/job-posting">Submit Job Posting</a></li>
+            <li><a class="dropdown-item" href="/job-postings">Analyzed Jobs</a></li>
+            <li><a class="dropdown-item" href="/industry-demand">Aggregated Industry Demand</a></li>
+            <li><a class="dropdown-item" href="/live-analysis">Live Labour Market Analysis</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="employerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Employer Validation
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="employerDropdown">
+            <li><a class="dropdown-item" href="/employer-feedback">Submit Employer Feedback</a></li>
+            <li><a class="dropdown-item" href="/employers">Employer Feedbacks</a></li>
+            <li><a class="dropdown-item" href="/validated-gap">Validated Skill Gaps</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/district-plan">District Plan</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="placementDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Placements
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="placementDropdown">
+            <li><a class="dropdown-item" href="/placement-outcome">Record Placement Outcome</a></li>
+            <li><a class="dropdown-item" href="/placement-outcomes">Placement Analytics</a></li>
+          </ul>
+        </li>
+      </ul>
+      <div class="d-flex gap-2">
+        <a href="/live-analysis" class="btn btn-sm btn-outline-info">Live Intelligence</a>
+      </div>
+    </div>
+  </div>
+</nav>

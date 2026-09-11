@@ -1,0 +1,56 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+      <h1 class="display-5 fw-bold mb-1">Analyzed Job Postings</h1>
+      <p class="text-muted lead mb-0">Parsed technical skills extracted from industry vacancies</p>
+    </div>
+    <div>
+      <a href="/job-posting" class="btn btn-primary">+ Post New Job</a>
+      <a href="/industry-demand" class="btn btn-outline-info ms-2">Industry Demand &rarr;</a>
+    </div>
+  </div>
+
+  <% if (!jobs || jobs.length === 0) { %>
+    <div class="alert alert-info text-center p-4">
+      <h4>No Job Postings Analyzed Yet</h4>
+      <p class="mb-3">Submit real-world job vacancies to feed intelligence into the skill engine.</p>
+      <a href="/job-posting" class="btn btn-primary">Submit First Job</a>
+    </div>
+  <% } else { %>
+    <div class="row g-4">
+      <% jobs.forEach(job => { %>
+        <div class="col-md-6">
+          <div class="card shadow-sm h-100 p-2">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h4 class="fw-bold mb-1"><%= job.role %></h4>
+                  <p class="text-muted mb-0"><%= job.company %> &bull; <%= job.location %></p>
+                </div>
+                <span class="badge bg-secondary">
+                  <%= job.createdAt ? new Date(job.createdAt).toLocaleDateString() : 'Recent' %>
+                </span>
+              </div>
+
+              <h6 class="mt-3 mb-2 text-secondary">Extracted In-Demand Skills</h6>
+              <div class="mb-3">
+                <% (job.extractedSkills || []).forEach(skill => { %>
+                  <span class="badge bg-primary me-1 mb-1"><%= skill %></span>
+                <% }) %>
+              </div>
+
+              <hr>
+
+              <h6 class="text-muted small text-uppercase">Role Overview</h6>
+              <p class="text-muted small flex-grow-1" style="max-height: 120px; overflow-y: auto;">
+                <%= job.description %>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>

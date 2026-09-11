@@ -1,0 +1,74 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">Curriculum Recommendations</h1>
+    <p class="text-muted lead">Targeted syllabus and laboratory updates based on industry demand signals</p>
+  </div>
+
+  <% if (!results || results.length === 0) { %>
+    <div class="alert alert-info text-center p-4">
+      <h4>No Recommendations Available</h4>
+      <p>Please seed curriculum data to generate recommendations.</p>
+    </div>
+  <% } else { %>
+    <% results.forEach(result => { %>
+      <div class="card shadow-sm mb-5">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h3 class="fw-bold mb-1"><%= result.data.course %></h3>
+              <p class="text-muted mb-0"><%= result.data.district %> &bull; <%= result.data.sector %></p>
+            </div>
+            <a href="/skill-gap" class="btn btn-sm btn-outline-secondary">&larr; Back to Skill Gaps</a>
+          </div>
+
+          <% if (!result.recommendations || result.recommendations.length === 0) { %>
+            <div class="alert alert-success mt-3">
+              No curriculum updates are currently required. The existing course syllabus aligns with industry demand.
+            </div>
+          <% } else { %>
+            <% result.recommendations.forEach(rec => { %>
+              <div class="card mb-3 border">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="fw-bold mb-0"><%= rec.skill %></h5>
+                    <% if (rec.priority === "High") { %>
+                      <span class="badge bg-danger">High Priority</span>
+                    <% } else if (rec.priority === "Medium") { %>
+                      <span class="badge bg-warning text-dark">Medium Priority</span>
+                    <% } else { %>
+                      <span class="badge bg-secondary">Low Priority</span>
+                    <% } %>
+                  </div>
+
+                  <p class="text-muted mt-2 mb-2">
+                    Industry Demand: <strong><%= rec.demand %>%</strong>
+                  </p>
+
+                  <div class="progress mb-3">
+                    <div
+                      class="progress-bar <%= rec.priority === 'High' ? 'bg-danger' : (rec.priority === 'Medium' ? 'bg-warning text-dark' : 'bg-secondary') %>"
+                      role="progressbar"
+                      style="width: <%= rec.demand %>%;"
+                      aria-valuenow="<%= rec.demand %>"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    >
+                      <%= rec.demand %>%
+                    </div>
+                  </div>
+
+                  <div class="alert alert-light border mb-0">
+                    <strong class="text-primary">Recommended Action:</strong>
+                    <p class="mb-0 mt-1"><%= rec.recommendation %></p>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+</div>

@@ -1,0 +1,138 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="display-5 fw-bold mb-1">Placement Outcomes & Analytics</h1>
+      <p class="text-muted lead mb-0">Empirical training effectiveness, placement rates, and employer satisfaction</p>
+    </div>
+    <a href="/placement-outcome" class="btn btn-primary">+ Record New Batch Outcome</a>
+  </div>
+
+  <!-- Summary KPI Cards -->
+  <% if (stats) { %>
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <div class="card shadow-sm h-100 p-2 border">
+          <div class="card-body">
+            <h6 class="text-muted text-uppercase small">Total Batches</h6>
+            <h2 class="fw-bold text-dark mb-0"><%= stats.totalBatches %></h2>
+            <small class="text-muted">Recorded cohorts</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card shadow-sm h-100 p-2 border">
+          <div class="card-body">
+            <h6 class="text-muted text-uppercase small">Students Trained / Placed</h6>
+            <h2 class="fw-bold text-primary mb-0"><%= stats.totalTrained %> / <%= stats.totalPlaced %></h2>
+            <small class="text-muted"><%= stats.totalCompleted %> completed certification</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card shadow-sm h-100 p-2 border">
+          <div class="card-body">
+            <h6 class="text-muted text-uppercase small">Overall Placement Rate</h6>
+            <h2 class="fw-bold text-success mb-0"><%= stats.overallPlacementRate %>%</h2>
+            <small class="text-muted">Employment conversion rate</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card shadow-sm h-100 p-2 border">
+          <div class="card-body">
+            <h6 class="text-muted text-uppercase small">Avg Package & Rating</h6>
+            <h2 class="fw-bold text-warning mb-0">
+              <%= stats.avgSalary > 0 ? '₹' + stats.avgSalary.toLocaleString() : 'N/A' %>
+            </h2>
+            <small class="text-muted">Rating: <strong><%= stats.avgSatisfaction %> / 5 ⭐</strong></small>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Detailed Cohort Records Table -->
+  <% if (!outcomes || outcomes.length === 0) { %>
+    <div class="alert alert-info text-center p-4">
+      <h4>No Placement Records Available</h4>
+      <p class="mb-3">Submit completed batch outcomes to view placement conversion rates.</p>
+      <a href="/placement-outcome" class="btn btn-primary">Record First Outcome</a>
+    </div>
+  <% } else { %>
+    <div class="card shadow-sm border mb-5">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">District & Course</th>
+                <th>Trained & Placed</th>
+                <th>Placement Rate</th>
+                <th>Average Salary</th>
+                <th>Satisfaction</th>
+                <th>Skills Utilized</th>
+                <th class="pe-4 text-end">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% outcomes.forEach(item => { %>
+                <%
+                  const rate = item.studentsTrained > 0 ? Math.round((item.studentsPlaced / item.studentsTrained) * 100) : 0;
+                %>
+                <tr>
+                  <td class="ps-4">
+                    <strong><%= item.course %></strong>
+                    <div class="text-muted small"><%= item.district %></div>
+                  </td>
+                  <td>
+                    <div><strong><%= item.studentsPlaced %></strong> / <%= item.studentsTrained %> placed</div>
+                    <div class="text-muted small"><%= item.studentsCompleted %> completed</div>
+                  </td>
+                  <td style="min-width: 140px;">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge <%= rate >= 70 ? 'bg-success' : (rate >= 50 ? 'bg-warning text-dark' : 'bg-danger') %>">
+                        <%= rate %>%
+                      </span>
+                      <div class="progress flex-grow-1" style="height: 6px;">
+                        <div class="progress-bar <%= rate >= 70 ? 'bg-success' : (rate >= 50 ? 'bg-warning' : 'bg-danger') %>" style="width: <%= rate %>%;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <% if (item.averageSalary) { %>
+                      <strong>₹<%= Number(item.averageSalary).toLocaleString() %></strong>
+                    <% } else { %>
+                      <span class="text-muted">-</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (item.employerSatisfaction) { %>
+                      <span class="badge bg-light text-dark border">
+                        <%= item.employerSatisfaction %> / 5 ⭐
+                      </span>
+                    <% } else { %>
+                      <span class="text-muted">-</span>
+                    <% } %>
+                  </td>
+                  <td style="max-width: 200px;">
+                    <% (item.skillsUsed || []).forEach(skill => { %>
+                      <span class="badge bg-secondary me-1 mb-1 small"><%= skill %></span>
+                    <% }) %>
+                  </td>
+                  <td class="pe-4 text-end text-muted small">
+                    <%= item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A' %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</div>

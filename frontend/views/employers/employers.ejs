@@ -1,0 +1,56 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+      <h1 class="display-5 fw-bold mb-1">Employer Validations</h1>
+      <p class="text-muted lead mb-0">Direct industry input validating workforce skill requirements</p>
+    </div>
+    <div>
+      <a href="/employer-feedback" class="btn btn-primary">+ Submit Validation</a>
+      <a href="/validated-gap" class="btn btn-outline-success ms-2">Validated Gaps &rarr;</a>
+    </div>
+  </div>
+
+  <% if (!feedbacks || feedbacks.length === 0) { %>
+    <div class="alert alert-info text-center p-4">
+      <h4>No Employer Validations Submitted Yet</h4>
+      <p class="mb-3">Be the first organization to submit skill validation feedback.</p>
+      <a href="/employer-feedback" class="btn btn-primary">Submit Feedback</a>
+    </div>
+  <% } else { %>
+    <div class="row g-4">
+      <% feedbacks.forEach(feedback => { %>
+        <div class="col-md-6">
+          <div class="card shadow-sm h-100 p-2">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h4 class="fw-bold mb-1"><%= feedback.company %></h4>
+                  <p class="text-muted mb-0">Target Role: <strong><%= feedback.role %></strong></p>
+                </div>
+                <span class="badge bg-secondary">
+                  <%= feedback.createdAt ? new Date(feedback.createdAt).toLocaleDateString() : 'Recent' %>
+                </span>
+              </div>
+
+              <h6 class="mt-3 mb-2 text-secondary">Required Skills</h6>
+              <div class="mb-3">
+                <% (feedback.skills || []).forEach(item => { %>
+                  <span class="badge bg-primary me-1 mb-1"><%= item.skill %></span>
+                <% }) %>
+              </div>
+
+              <% if (feedback.feedback) { %>
+                <div class="alert alert-light border mt-auto mb-0">
+                  <strong class="text-dark small">Employer Feedback:</strong>
+                  <p class="mb-0 mt-1 text-muted small"><%= feedback.feedback %></p>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>

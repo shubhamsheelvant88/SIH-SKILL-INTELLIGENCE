@@ -1,0 +1,40 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5" style="max-width: 760px;">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold">Employer Validation</h1>
+    <p class="text-muted lead">Validate the concrete in-demand skills required by your organization</p>
+  </div>
+
+  <div class="card shadow-sm border">
+    <div class="card-body p-4">
+      <form action="/employer-feedback" method="POST">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Company Name</label>
+          <input type="text" name="company" class="form-control" placeholder="e.g. Infosys, TCS, TechNova" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Job Role</label>
+          <input type="text" name="role" class="form-control" placeholder="e.g. Full Stack Developer, Cloud Associate" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Required Skills</label>
+          <input type="text" name="skills" class="form-control" placeholder="React, Node.js, AWS, Docker" required>
+          <small class="text-muted">Separate multiple skills using commas.</small>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-bold">Direct Feedback</label>
+          <textarea name="feedback" class="form-control" rows="4" placeholder="Enter specific observations on student competencies, missing tools, or recommended project experience..."></textarea>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <a href="/employers" class="text-decoration-none text-muted">&larr; View Existing Validations</a>
+          <button type="submit" class="btn btn-primary px-4">Submit Validation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
