@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Placement Feedback</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Placement Feedback</h1>
+
+    <p class="subtitle">
+      Submit and monitor training placement outcomes
+    </p>
+
+
+    <section class="card">
+
+      <h2>Add Placement Record</h2>
+
+      <form id="placementForm">
+
+        <div class="form-group">
+          <label for="courseName">
+            Course Name
+          </label>
+
+          <input
+            type="text"
+            id="courseName"
+            placeholder="Example: Full Stack Development"
+            required
+          />
+        </div>
+
+
+        <div class="form-group">
+          <label for="studentsTrained">
+            Students Trained
+          </label>
+
+          <input
+            type="number"
+            id="studentsTrained"
+            min="1"
+            placeholder="Example: 100"
+            required
+          />
+        </div>
+
+
+        <div class="form-group">
+          <label for="studentsPlaced">
+            Students Placed
+          </label>
+
+          <input
+            type="number"
+            id="studentsPlaced"
+            min="0"
+            placeholder="Example: 72"
+            required
+          />
+        </div>
+
+
+        <div class="form-group">
+          <label for="placementYear">
+            Placement Year
+          </label>
+
+          <input
+            type="number"
+            id="placementYear"
+            min="2000"
+            max="2100"
+            placeholder="Example: 2026"
+            required
+          />
+        </div>
+
+
+        <div class="form-group">
+          <label for="location">
+            Location / District
+          </label>
+
+          <input
+            type="text"
+            id="location"
+            placeholder="Example: Bengaluru"
+            required
+          />
+        </div>
+
+
+        <div class="form-group">
+          <label for="topSkills">
+            Top Placement Skills
+          </label>
+
+          <input
+            type="text"
+            id="topSkills"
+            placeholder="Example: React, Node.js, AWS"
+          />
+
+          <small>
+            Separate skills using commas.
+          </small>
+        </div>
+
+
+        <button type="submit">
+          Submit Placement Record
+        </button>
+
+      </form>
+
+      <p id="message"></p>
+
+    </section>
+
+
+    <section class="card">
+
+      <h2>Placement Dashboard</h2>
+
+      <div class="filters">
+
+        <input
+          type="text"
+          id="courseFilter"
+          placeholder="Filter by course"
+        />
+
+        <input
+          type="text"
+          id="locationFilter"
+          placeholder="Filter by location"
+        />
+
+        <input
+          type="number"
+          id="yearFilter"
+          placeholder="Filter by year"
+        />
+
+        <button id="clearFilters">
+          Clear Filters
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <section class="stats">
+
+      <div class="stat-card">
+        <h3>Total Records</h3>
+        <p id="totalRecords">0</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Total Trained</h3>
+        <p id="totalTrained">0</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Total Placed</h3>
+        <p id="totalPlaced">0</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Overall Placement Rate</h3>
+        <p id="overallRate">0%</p>
+      </div>
+
+    </section>
+
+
+    <section id="placementList" class="placement-list">
+
+      <p class="loading">
+      </p>
+
+    </section>
+
+  </div>
+
+
+  <script src="script.js"></script>
+
+</body>
+</html>
