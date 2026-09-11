@@ -1,55 +1,160 @@
 <% layout('layouts/boilerplate') %>
 
 <div class="container py-5">
-  <div class="p-5 mb-5 bg-light rounded-4 shadow-sm text-center border">
+  <!-- Hero Section -->
+  <div class="p-5 mb-5 bg-light rounded-4 shadow-sm text-center border hero-banner">
     <span class="badge bg-primary px-3 py-2 fs-6 mb-3">AI & Labour Market Intelligence</span>
     <h1 class="display-4 fw-bold">Skill Intelligence Platform</h1>
-    <p class="col-md-8 mx-auto lead text-muted mt-3">
+    <p class="col-md-9 mx-auto lead text-muted mt-3">
       From Industry Demand &rarr; To Actionable Curriculum Updates & Better Training Outcomes.
-      Harmonizing job postings, employer validations, and district-level execution.
+      Harmonizing live job postings, direct employer validations, and district-level execution roadmaps.
     </p>
-    <div class="d-flex justify-content-center gap-3 mt-4">
-      <a href="/dashboard" class="btn btn-primary btn-lg px-4">
-        Open Dashboard
+    <div class="d-flex justify-content-center flex-wrap gap-3 mt-4">
+      <a href="/assessment" class="btn btn-primary btn-lg px-4 shadow-sm">
+        ⚡ Take Skill Gap Assessment
+      </a>
+      <a href="/dashboard" class="btn btn-outline-primary btn-lg px-4">
+        📊 Open Dashboard
       </a>
       <a href="/live-analysis" class="btn btn-outline-dark btn-lg px-4">
-        Live Market Analysis
+        🌐 Live Market Analysis
       </a>
     </div>
   </div>
 
-  <div class="row g-4">
-    <div class="col-md-4">
-      <div class="card h-100 card-hover-elevate p-3">
-        <div class="card-body">
-          <div class="fs-1 mb-2">📊</div>
-          <h4 class="card-title">Skill Gap Analysis</h4>
-          <p class="card-text text-muted">Compare market demand with current academic curricula to pinpoint high-priority training deficits.</p>
-          <a href="/skill-gap" class="btn btn-sm btn-outline-primary">Analyse Gaps &rarr;</a>
+  <!-- Featured Assessment Banner -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white border-start border-4 border-primary">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
+      <div class="d-flex align-items-center gap-3">
+        <div class="fs-1 p-3 bg-primary-subtle text-primary rounded-3">🎯</div>
+        <div>
+          <span class="badge bg-primary mb-1">New Feature</span>
+          <h3 class="h4 fw-bold mb-1">Interactive Job Role Skill Gap Assessment</h3>
+          <p class="text-muted mb-0">
+            Select your target role, answer 6 practical YES/NO competency questions, and navigate directly into the comprehensive Skill Gap Analysis.
+          </p>
         </div>
       </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="card h-100 card-hover-elevate p-3">
-        <div class="card-body">
-          <div class="fs-1 mb-2">🏢</div>
-          <h4 class="card-title">Employer Validation</h4>
-          <p class="card-text text-muted">Collect verified direct employer feedback on required proficiencies and ground curricular recommendations.</p>
-          <a href="/employers" class="btn btn-sm btn-outline-primary">View Validations &rarr;</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="card h-100 card-hover-elevate p-3">
-        <div class="card-body">
-          <div class="fs-1 mb-2">🗺️</div>
-          <h4 class="card-title">District Training Plans</h4>
-          <p class="card-text text-muted">Generate resource, trainer, and equipment allocation roadmaps tailored to local industrial demand.</p>
-          <a href="/district-plan" class="btn btn-sm btn-outline-primary">Generate Plan &rarr;</a>
-        </div>
+      <div class="flex-shrink-0">
+        <a href="/assessment" class="btn btn-primary btn-lg px-4 shadow-sm">
+          Start Assessment &rarr;
+        </a>
       </div>
     </div>
   </div>
+
+  <!-- Complete Web App Connected Features Section -->
+  <section class="mt-4">
+    <div class="text-center mb-4">
+      <h2 class="h3 fw-bold">🗺️ Complete Platform Modules & Feature Routes</h2>
+      <p class="text-muted">Explore all interconnected intelligence tools across the Labour Market & Curriculum Platform</p>
+    </div>
+
+    <div class="row g-4">
+      <!-- Card 1: Skills & Curriculum -->
+      <div class="col-md-4">
+        <div class="card h-100 card-hover-elevate p-3 border-top border-4 border-primary">
+          <div class="card-body d-flex flex-column">
+            <div class="fs-1 mb-2">📊</div>
+            <h4 class="card-title fw-bold">Curriculum Demand & Dashboard</h4>
+            <p class="card-text text-muted small flex-grow-1">
+              Analyze required industrial technologies, current syllabus coverage, and macro sector statistics across districts.
+            </p>
+            <div class="d-flex gap-2 mt-3">
+              <a href="/dashboard" class="btn btn-sm btn-primary flex-grow-1">Dashboard</a>
+              <a href="/skills" class="btn btn-sm btn-outline-primary flex-grow-1">Curriculum Skills</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Skill Gaps, Assessment & Recommendations -->
+      <div class="col-md-4">
+        <div class="card h-100 card-hover-elevate p-3 border-top border-4 border-danger">
+          <div class="card-body d-flex flex-column">
+            <div class="fs-1 mb-2">🎯</div>
+            <h4 class="card-title fw-bold">Skill Gap & Assessment</h4>
+            <p class="card-text text-muted small flex-grow-1">
+              Algorithmic deficit detection comparing live industry job demand percentages directly against existing academic curricula.
+            </p>
+            <div class="d-flex gap-2 flex-wrap mt-3">
+              <a href="/assessment" class="btn btn-sm btn-outline-danger flex-grow-1">6-Q Assessment</a>
+              <a href="/skill-gap" class="btn btn-sm btn-danger flex-grow-1">Skill Gaps</a>
+              <a href="/recommendations" class="btn btn-sm btn-outline-success w-100">Curriculum Recommendations</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Oversupplied Courses Analysis -->
+      <div class="col-md-4">
+        <div class="card h-100 card-hover-elevate p-3 border-top border-4 border-warning">
+          <div class="card-body d-flex flex-column">
+            <div class="fs-1 mb-2">📉</div>
+            <h4 class="card-title fw-bold">Oversupplied Courses</h4>
+            <p class="card-text text-muted small flex-grow-1">
+              Identify saturated credentials, AI-commoditized skills, and strategic high-value pivots for state and district academies.
+            </p>
+            <div class="d-flex gap-2 mt-3">
+              <a href="/oversupplied-courses" class="btn btn-sm btn-warning text-dark flex-grow-1">Oversupply Intelligence</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Job Market Intelligence -->
+      <div class="col-md-4">
+        <div class="card h-100 card-hover-elevate p-3 border-top border-4 border-info">
+          <div class="card-body d-flex flex-column">
+            <div class="fs-1 mb-2">💼</div>
+            <h4 class="card-title fw-bold">Job Market Intelligence</h4>
+            <p class="card-text text-muted small flex-grow-1">
+              Ingest real-time job openings, extract in-demand skills, and inspect aggregated market frequency distributions.
+            </p>
+            <div class="d-flex gap-2 flex-wrap mt-3">
+              <a href="/job-postings" class="btn btn-sm btn-info text-dark flex-grow-1">Analyzed Jobs</a>
+              <a href="/job-posting" class="btn btn-sm btn-outline-dark flex-grow-1">Post Job</a>
+              <a href="/industry-demand" class="btn btn-sm btn-outline-info text-dark w-100">Industry Demand</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Employer Validations -->
+      <div class="col-md-4">
+        <div class="card h-100 card-hover-elevate p-3 border-top border-4 border-success">
+          <div class="card-body d-flex flex-column">
+            <div class="fs-1 mb-2">🏢</div>
+            <h4 class="card-title fw-bold">Employer Validations</h4>
+            <p class="card-text text-muted small flex-grow-1">
+              Direct corporate verification by hiring partners on candidate readiness, required proficiencies, and feedback loops.
+            </p>
+            <div class="d-flex gap-2 flex-wrap mt-3">
+              <a href="/employers" class="btn btn-sm btn-success flex-grow-1">Validations</a>
+              <a href="/validated-gap" class="btn btn-sm btn-outline-success flex-grow-1">Validated Gaps</a>
+              <a href="/employer-feedback" class="btn btn-sm btn-outline-secondary w-100">Submit Feedback</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6: District Roadmaps & Placements -->
+      <div class="col-md-4">
+        <div class="card h-100 card-hover-elevate p-3 border-top border-4 border-secondary">
+          <div class="card-body d-flex flex-column">
+            <div class="fs-1 mb-2">🗺️</div>
+            <h4 class="card-title fw-bold">District Plans & Placements</h4>
+            <p class="card-text text-muted small flex-grow-1">
+              Convert skill intelligence into local resource roadmaps, equipment allocations, and track cohort employment outcomes.
+            </p>
+            <div class="d-flex gap-2 flex-wrap mt-3">
+              <a href="/district-plan" class="btn btn-sm btn-secondary flex-grow-1">District Plan</a>
+              <a href="/placement-outcomes" class="btn btn-sm btn-outline-primary flex-grow-1">Placement Records</a>
+              <a href="/placement-outcome" class="btn btn-sm btn-outline-secondary w-100">+ Record Placement</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>

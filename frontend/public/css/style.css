@@ -91,3 +91,35 @@ footer.site-footer {
   border-top: 1px solid var(--border-color);
   color: var(--text-muted);
 }
+
+/* Assessment Utilities & Styles */
+.fs-7 { font-size: 0.85rem; }
+.fs-8 { font-size: 0.75rem; }
+
+.question-card {
+  transition: all 0.2s ease-in-out;
+  background-color: #ffffff;
+  border-radius: var(--radius-md);
+}
+
+.question-card:hover {
+  border-color: #93c5fd !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+}
+
+.role-select-btn {
+  transition: all 0.15s ease-in-out;
+  border-radius: var(--radius-md);
+}
+
+.role-select-btn:hover {
+  transform: translateY(-2px);
+}
+
+.hero-banner {
+  background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+}
+
+.bg-success-subtle {
+  background-color: #dcfce7 !important;
+}

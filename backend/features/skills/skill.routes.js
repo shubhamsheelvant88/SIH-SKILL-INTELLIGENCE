@@ -6,5 +6,7 @@ router.get("/skills", skillController.getSkills);
 router.get("/dashboard", skillController.getDashboard);
 router.get("/skill-gap", skillController.getSkillGap);
 router.get("/recommendations", skillController.getRecommendations);
+router.get("/assessment", skillController.getAssessment);
+router.get("/skill-assessment", skillController.getAssessment);
 
 module.exports = router;

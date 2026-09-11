@@ -1,5 +1,6 @@
 const { SkillDemand } = require("../../../db/models");
 const skillService = require("./skill.service");
+const { ASSESSMENT_ROLES } = require("../home/assessment.data");
 
 async function getSkills(req, res, next) {
   try {
@@ -54,9 +55,16 @@ async function getRecommendations(req, res, next) {
   }
 }
 
+function getAssessment(req, res) {
+  res.render("skills/assessment", {
+    assessmentRoles: ASSESSMENT_ROLES
+  });
+}
+
 module.exports = {
   getSkills,
   getDashboard,
   getSkillGap,
-  getRecommendations
+  getRecommendations,
+  getAssessment
 };

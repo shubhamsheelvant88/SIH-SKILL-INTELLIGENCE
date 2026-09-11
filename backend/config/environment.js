@@ -1,10 +1,13 @@
 const path = require("path");
+const dotenv = require("dotenv");
+
+const ROOT_DIR = path.resolve(__dirname, "../../");
+dotenv.config({ path: path.resolve(ROOT_DIR, ".env") });
 
 const NODE_ENV = process.env.NODE_ENV || "development";
 const PORT = process.env.PORT || 8080;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/skill-intelligence";
+const MONGO_URI = process.env.MONGO_URI;
 
-const ROOT_DIR = path.resolve(__dirname, "../../");
 const BACKEND_DIR = path.resolve(__dirname, "../");
 const FRONTEND_DIR = path.resolve(ROOT_DIR, "frontend");
 const VIEWS_DIR = path.resolve(FRONTEND_DIR, "views");

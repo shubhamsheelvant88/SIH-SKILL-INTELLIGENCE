@@ -1,0 +1,106 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container py-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/home" class="text-decoration-none">Home</a></li>
+      <li class="breadcrumb-item"><a href="/skills" class="text-decoration-none">Skills & Curriculum</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Skill Gap Assessment</li>
+    </ol>
+  </nav>
+
+  <!-- Header Banner -->
+  <div class="p-4 p-md-5 mb-4 bg-light rounded-4 shadow-sm border">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+      <div>
+        <span class="badge bg-primary px-3 py-2 fs-6 mb-2">Diagnostic Assessment</span>
+        <h1 class="display-6 fw-bold mb-2">🎯 Job Role Competency & Skill Gap Assessment</h1>
+        <p class="text-muted lead fs-6 mb-0">
+          Select your target job role, answer 6 practical YES/NO competency questions, and proceed to the comprehensive Skill Gap Analysis report.
+        </p>
+      </div>
+      <div class="d-flex gap-2">
+        <span class="badge bg-dark px-3 py-2 fs-6">6 Questions</span>
+        <span class="badge bg-success px-3 py-2 fs-6">YES / NO Format</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-5">
+    <!-- Step 1: Role Selector -->
+    <div class="mb-4">
+      <label class="form-label fw-bold text-secondary text-uppercase fs-7 mb-2">Step 1: Choose Your Target Job Role</label>
+      <div class="row g-3" id="role-selector-container">
+        <% Object.values(assessmentRoles).forEach((role, idx) => { %>
+          <div class="col-6 col-md-3">
+            <button
+              type="button"
+              class="btn w-100 p-3 text-start border role-select-btn <%= idx === 0 ? 'active btn-primary text-white' : 'btn-light text-dark' %>"
+              data-role-id="<%= role.id %>"
+            >
+              <div class="fs-3 mb-1"><%= role.icon %></div>
+              <div class="fw-bold fs-6"><%= role.name %></div>
+              <small class="d-block text-truncate opacity-75"><%= role.sector %></small>
+            </button>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <!-- Active Role Info Banner -->
+    <div class="alert alert-light border rounded-3 p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2" id="active-role-banner">
+      <div>
+        <span class="text-muted">Targeting Role:</span>
+        <strong class="fs-5 ms-1 text-primary" id="active-role-name">Full Stack Developer</strong>
+        <span class="badge bg-secondary ms-2" id="active-role-sector">IT & Web Engineering</span>
+        <p class="text-muted small mb-0 mt-1" id="active-role-desc">
+          Build end-to-end web applications bridging modern responsive interfaces with scalable server architectures and database layers.
+        </p>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-quick-yes">All YES</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-quick-no">All NO</button>
+        <button type="button" class="btn btn-sm btn-outline-danger" id="btn-reset-answers">Reset</button>
+      </div>
+    </div>
+
+    <!-- Step 2: 6 YES/NO Questions (Clean Single Column, No Right Column) -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="h5 fw-bold mb-0">Step 2: Answer 6 Competency Questions</h4>
+        <span class="badge bg-light text-dark border px-3 py-2" id="answered-counter">0 of 6 answered</span>
+      </div>
+
+      <div id="questions-container" class="d-flex flex-column gap-3">
+        <!-- Dynamically populated via main.js -->
+      </div>
+    </div>
+
+    <!-- Step 3: Analyze Skill Gap Analysis Button Card (Placed Below Questions) -->
+    <div class="card p-4 border-2 border-primary bg-primary-subtle rounded-4 shadow-sm mt-4">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+          <h4 class="h5 fw-bold text-dark mb-1">Done Marking Your Answers?</h4>
+          <p class="text-muted mb-0 small" id="assessment-summary-text">
+            Click below to generate and review your institutional Skill Gap Analysis and curriculum recommendations.
+          </p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="/skill-gap" id="btn-analyze-skill-gap" class="btn btn-primary btn-lg px-4 shadow-sm d-flex align-items-center gap-2">
+            <span>⚡ Analyze Skill Gap Analysis</span>
+            <span>&rarr;</span>
+          </a>
+          <a href="/recommendations" class="btn btn-outline-success btn-lg px-3">
+            Recommendations &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Embedded Assessment Data for Reactive Client Script -->
+<script id="assessment-data" type="application/json">
+  <%- JSON.stringify(assessmentRoles) %>
+</script>
