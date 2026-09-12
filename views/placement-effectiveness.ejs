@@ -1,0 +1,109 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+
+    <div class="text-center mb-5">
+
+        <h1>Placement Effectiveness Analysis</h1>
+
+        <p class="text-muted">
+            Measuring whether identified skill gaps are relevant to actual jobs
+        </p>
+
+    </div>
+
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <h5>
+                Placement Outcomes Analysed:
+                <%= totalOutcomes %>
+            </h5>
+
+        </div>
+
+    </div>
+
+
+    <% if (analysis.length === 0) { %>
+
+        <div class="alert alert-info">
+
+            No skill gaps available for analysis.
+
+        </div>
+
+    <% } else { %>
+
+
+        <div class="row">
+
+            <% analysis.forEach(item => { %>
+
+                <div class="col-md-4 mb-4">
+
+                    <div class="card shadow-sm">
+
+                        <div class="card-body">
+
+                            <h4>
+                                <%= item.skill %>
+                            </h4>
+
+
+                            <p>
+                                Industry Demand:
+                                <strong>
+                                    <%= item.demand %>%
+                                </strong>
+                            </p>
+
+
+                            <p>
+                                Priority:
+                                <strong>
+                                    <%= item.priority %>
+                                </strong>
+                            </p>
+
+
+                            <% if (item.status === "Effective") { %>
+
+                                <span class="badge bg-success">
+                                    Effective
+                                </span>
+
+                                <p class="text-success mt-3">
+                                    This skill is being used in actual
+                                    placement outcomes.
+                                </p>
+
+                            <% } else { %>
+
+                                <span class="badge bg-warning text-dark">
+                                    Needs Validation
+                                </span>
+
+                                <p class="text-muted mt-3">
+                                    No placement outcome currently
+                                    confirms this skill.
+                                </p>
+
+                            <% } %>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            <% }) %>
+
+        </div>
+
+
+    <% } %>
+
+</div>

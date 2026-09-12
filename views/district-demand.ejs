@@ -1,0 +1,76 @@
+<% layout('layouts/boilerplate') %>
+
+
+
+<div class="container mt-5">
+
+    <div class="text-center mb-5">
+
+        <h1>District-wise Industry Demand</h1>
+
+        <p class="text-muted">
+            Skill demand across different locations
+        </p>
+
+    </div>
+
+
+    <% for (let district in districtDemand) { %>
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <h2>
+                    <%= district %>
+                </h2>
+
+                <div class="row mt-4">
+
+                    <% 
+                    const skills = Object.entries(
+                        districtDemand[district]
+                    ).sort((a, b) => b[1] - a[1]);
+                    %>
+
+
+                    <% skills.forEach(skill => { %>
+
+                        <div class="col-md-4 mb-3">
+
+                            <div class="card">
+
+                                <div class="card-body">
+
+                                    <h5>
+                                        <%= skill[0] %>
+                                    </h5>
+
+                                    <div class="progress">
+
+                                        <div
+                                            class="progress-bar"
+                                            style="width: <%= skill[1] %>%"
+                                        >
+                                            <%= skill[1] %>%
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    <% }) %>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    <% } %>
+
+</div>

@@ -1,0 +1,63 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+
+    <h1 class="mb-4">Role-wise Industry Demand</h1>
+
+    <p class="text-muted">
+        Based on <%= totalJobs %> job postings
+    </p>
+
+    <% 
+        const sortedRoles = Object.entries(roleDemand)
+            .sort((a, b) => b[1] - a[1]);
+    %>
+
+    <% if (sortedRoles.length === 0) { %>
+
+        <div class="alert alert-warning">
+            No job postings available.
+        </div>
+
+    <% } else { %>
+
+        <% sortedRoles.forEach(([role, demand]) => { %>
+
+            <div class="card mb-3">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <h5>
+                            <%= role %>
+                        </h5>
+
+                        <strong>
+                            <%= demand %>%
+                        </strong>
+
+                    </div>
+
+                    <div class="progress mt-2">
+
+                        <div 
+                            class="progress-bar"
+                            role="progressbar"
+                            style="width: <%= demand %>%">
+
+                            <%= demand %>%
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        <% }) %>
+
+    <% } %>
+
+</div>

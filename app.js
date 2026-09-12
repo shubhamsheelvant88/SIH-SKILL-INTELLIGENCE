@@ -293,6 +293,129 @@ function generateDistrictTrainingPlan(gaps, district, course) {
   };
 }
 
+function calculatePlacementRate(studentsPlaced, studentsCompleted) {
+  if (studentsCompleted === 0) {
+    return 0;
+  }
+
+  return Math.round((studentsPlaced / studentsCompleted) * 100);
+}
+
+
+function analyzePlacementEffectiveness(gaps, placementOutcomes) {
+  const allUsedSkills = [];
+
+  // what skills are used in the placement compare with gap.skill
+  placementOutcomes.forEach(outcome => {
+    outcome.skillsUsed.forEach(skill => {
+      allUsedSkills.push(skill.toLowerCase());
+    });
+  });
+
+  //  array of objects
+  return gaps.map(gap => {
+
+    // whether the skill in the placment outcome(recommended) is actually used in the gap
+    const skillUsed = allUsedSkills.includes(
+      gap.skill.toLowerCase()
+    );
+
+    let status;
+
+    if(skillUsed) {
+      status = "Effective";
+    } else {
+      status = "Needs Validation";
+    }
+
+    return {
+      skill: gap.skill,
+      demand: gap.demand,
+      priority: gap.priority,
+      skillUsed: skillUsed,
+      status: status
+    }
+  });
+}
+
+function calculateDistrictDemand(jobs) {
+
+    const districtJobs = {};
+
+    // Group jobs by district/location
+    jobs.forEach(job => {
+
+        const district = job.location.trim();
+
+        if (!districtJobs[district]) {
+            districtJobs[district] = [];
+        }
+
+        districtJobs[district].push(job);
+
+    });
+
+
+    const districtDemand = {};
+
+    // Calculate demand for each district
+    for (let district in districtJobs) {
+
+        districtDemand[district] =
+            calculateIndustryDemand(districtJobs[district]);
+
+    }
+
+    return districtDemand;
+}
+
+// what this does ?
+
+// Job 1 → Bengaluru → React, AWS
+// Job 2 → Bengaluru → React, Node.js
+// Job 3 → Hyderabad → Java, Spring Boot
+// Job 4 → Hyderabad → Java, AWS
+
+// Bengaluru
+//    → Job 1
+//    → Job 2
+
+// Hyderabad
+//    → Job 3
+//    → Job 4
+
+// role analysis
+function calculateRoleDemand(jobs) {
+
+    const roleCounts = {};
+
+    jobs.forEach(job => {
+
+        const role = job.role.trim();
+
+        if (roleCounts[role]) {
+            roleCounts[role]++;
+        } else {
+            roleCounts[role] = 1;
+        }
+
+    });
+
+    const totalJobs = jobs.length;
+
+    const roleDemand = {};
+
+    for (let role in roleCounts) {
+
+        roleDemand[role] =
+            Math.round((roleCounts[role] / totalJobs) * 100);
+
+    }
+
+    return roleDemand;
+}
+
+
 app.get("/", (req, res) => {
   res.send("rout is working");
 });
@@ -308,8 +431,89 @@ app.get("/skills" , async (req, res) => {
 });
 
 app.get("/dashboard", async (req, res) => {
-  const skillData = await SkillDemand.find({});
-  res.render("dashboard", {skillData});
+
+    // Get job postings
+    const jobs = await JobPosting.find({});
+
+    // Calculate industry demand
+    const industryDemand = calculateIndustryDemand(jobs);
+
+
+    // Get curriculum
+    const skillData = await SkillDemand.findOne({});
+
+    if (!skillData) {
+        return res.send("No curriculum data found.");
+    }
+
+
+    // Calculate skill gaps
+    const gaps = calculateLiveSkillGaps(
+        industryDemand,
+        skillData.currentCurriculum
+    );
+
+
+    // Get placement outcomes
+    const placementOutcomes =
+        await PlacementOutcome.find({});
+
+
+    // Calculate total students
+    let totalStudentsCompleted = 0;
+    let totalStudentsPlaced = 0;
+
+    placementOutcomes.forEach(outcome => {
+
+        totalStudentsCompleted +=
+            outcome.studentsCompleted;
+
+        totalStudentsPlaced +=
+            outcome.studentsPlaced;
+
+    });
+
+
+    // Calculate placement rate
+    let placementRate = 0;
+
+    if (totalStudentsCompleted > 0) {
+
+      placementRate = Math.round((totalStudentsPlaced / totalStudentsCompleted) * 100);
+    }
+
+
+    // Sort skills by demand
+    const topSkills = Object.entries(industryDemand)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+
+
+    // Generate district plan
+    const trainingPlan =
+        generateDistrictTrainingPlan(
+            gaps,
+            skillData.district,
+            skillData.course
+        );
+
+
+    res.render("dashboard", {
+
+        totalJobs: jobs.length,
+
+        totalGaps: gaps.length,
+
+        placementRate,
+
+        topSkills,
+
+        trainingPlan,
+
+        data: skillData
+
+    });
+
 });
 
 app.get("/skill-gap", async (req, res) => {
@@ -487,7 +691,7 @@ app.get("/placement-outcome", (req, res) => {
 });
 
 app.post("/placement-outcome", async (req, res) => {
-  let {district, course, studentsTrained, studentsCompleted, studentsPlaced, skillsUsed, employerSatisfaction} = req.body;
+  let {district, course, studentsTrained, studentsCompleted, studentsPlaced, averageSalary, skillsUsed, employerSatisfaction} = req.body;
 
   const skillList = skillsUsed ? skillsUsed
       .split(",")
@@ -504,16 +708,80 @@ app.post("/placement-outcome", async (req, res) => {
     skillsUsed: skillList,
     employerSatisfaction : employerSatisfaction ? Number(employerSatisfaction) : undefined
   });
-  await PlacementOutcome.save();
+  await placementOutcome.save();
 
   res.redirect("/placement-outcomes");
 });
 
 app.get("/placement-outcomes", async (req, res) => {
-  const outcomes = await PlacementOutcomes.find({});
+  const outcomes = await PlacementOutcome.find({});
+
+  const results = outcomes.map(outcome => {
+
+        const placementRate = calculatePlacementRate(outcome.studentsPlaced, outcome.studentsCompleted);
+
+        return {outcome, placementRate};
+
+    });
   
-  res.render("placement-outcomes", outcomes);
-})
+  res.render("placement-outcomes", {results});
+});
+
+app.get("/placement-effectiveness", async (req, res) => {
+
+  const jobs = await JobPosting.find({});
+
+  const industryDemand = calculateIndustryDemand(jobs);
+
+  const skillData = await SkillDemand.findOne({});
+
+  if (!skillData) {
+    return res.send("No curriculum data found.");
+  }
+
+  const gaps = calculateLiveSkillGaps(
+    industryDemand,
+    skillData.currentCurriculum
+  );
+
+  const placementOutcomes = await PlacementOutcome.find({});
+
+  const analysis = analyzePlacementEffectiveness(
+    gaps,
+    placementOutcomes
+  );
+
+    res.render("placement-effectiveness", {
+      analysis,
+      totalOutcomes: placementOutcomes.length
+  });
+});
+
+app.get("/district-demand", async (req, res) => {
+
+    const jobs = await JobPosting.find({});
+
+    const districtDemand =
+        calculateDistrictDemand(jobs);
+
+    res.render("district-demand", {
+        districtDemand
+    });
+});
+
+// role demand
+app.get("/role-demand", async (req, res) => {
+
+  const jobs = await JobPosting.find({});
+
+  const roleDemand = calculateRoleDemand(jobs);
+
+    res.render("role-demand", {
+        roleDemand,
+        totalJobs: jobs.length
+    });
+
+});
 
 app.listen(8080, (req, res) => {
     console.log("app is listening your port");

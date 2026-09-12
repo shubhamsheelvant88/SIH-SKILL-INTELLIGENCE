@@ -1,0 +1,72 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="conatiner mt-5">
+    <div class="text-center mt-5">
+        <h1>Placement Outcomes</h1>
+
+        <p class="text-muted">
+            Training effectiveness and placement results
+        </p>
+    </div>
+
+    <% results.forEach(result => { %>
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h3><%= result.outcome.course %></h3>
+
+                <p class="text-muted"><%= result.outcome.district %></p>
+
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Students Trained</strong>
+
+                        <p><%= result.outcome.studentsTrained %></p>
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <strong>Completed</strong>
+
+                        <p><%= result.outcome.studentsCompleted %></p>
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <strong>Placed</strong>
+
+                        <p><%= result.outcome.studentsPlaced %></p>
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <strong>Average Salary</strong>
+
+                        <p>₹<%= result.outcome.averageSalary || "N/A" %></p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h5>Skills Used</h5>
+
+                <% if(result.outcome.skillUsed) { %>
+                <% outcome.skillUsed.forEach(skill => { %>
+                    <span class="badge bg-primary me-1"><%= skill %></span>
+                <%})%>
+                <%}%>
+
+                <% if (result.outcome.employerSatisfaction) { %>
+
+                    <p class="mt-3">Employer Satisfaction : 
+                        <strong><%= result.outcome.employerSatisfaction %></strong>
+                    </p>
+                <% } %>
+
+                <p>Placement Rate : 
+                    <strong><%= result.placementRate %></strong>
+                </p>
+            </div>
+        </div>
+    <% }) %>
+</div>

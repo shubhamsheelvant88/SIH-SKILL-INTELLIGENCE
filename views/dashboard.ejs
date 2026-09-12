@@ -1,120 +1,242 @@
 <% layout('layouts/boilerplate') %>
 
 <div class="container mt-5">
+
     <div class="text-center mb-5">
 
-        <h1 class="display-5 fw-bold">
-            Skill Intelligence Dashboard
-        </h1>
+        <h1>Skill Intelligence Dashboard</h1>
 
-        <p class="text-muted lead">Industry demand analysis and training intelligence</p>
+        <p class="text-muted">
+            From Industry Demand → To Better Training
+        </p>
+
     </div>
 
-    <% skillData.forEach(data => { %>
-        <!-- location & sector -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <h6>District : </h6>
-                        <h4><%= data.district %></h4>
-                    </div>
-                    <div class="col-md-4">
-                        <h6>Sector : </h6>
-                        <h4><%= data.sector %></h4>
-                    </div>
-                    <div class="col md-4">
-                        <h6>Course : </h6>
-                        <h4><%= data.course %></h4>
-                    </div>
+
+    <!-- SUMMARY CARDS -->
+
+    <div class="row mb-5">
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h5>Job Postings Analysed</h5>
+
+                    <h2>
+                        <%= totalJobs %>
+                    </h2>
+
                 </div>
+
             </div>
+
         </div>
-        <!-- Summary cards -->
-         <div class="row g-4 mb-3">
-            <div class="col-md-3">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h6>SKILLS ANALYSED</h6>
-                         <h2> <%=  Object.keys(data.industryDemand).length %> </h2>
-                        <p class="text-muted mb-0">Industry skills</p>
-                    </div>
+
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h5>Skill Gaps Detected</h5>
+
+                    <h2>
+                        <%= totalGaps %>
+                    </h2>
+
                 </div>
+
             </div>
 
-            <div class="col-md-3">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h6>CURRICULUM SKILLS</h6>
-                        <h2> <%= data.currentCurriculum.length %> </h2>
-                        <p class="text-muted mb-0">Currently taught</p>
-                    </div>
+        </div>
+
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h5>Placement Rate</h5>
+
+                    <h2>
+                        <%= placementRate %>%
+                    </h2>
+
                 </div>
+
             </div>
 
-            <div class="col-md-3">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h6>SKILLS GAPS</h6>
-                         <h2> <%= Object.keys(data.industryDemand).length - data.currentCurriculum.length %> </h2>
-                        <p class="text-muted mb-0">Skills missing</p>
+        </div>
+
+    </div>
+
+
+    <!-- TOP SKILLS -->
+
+    <div class="card shadow-sm mb-5">
+
+        <div class="card-body">
+
+            <h3>
+                Top In-Demand Skills
+            </h3>
+
+            <div class="row mt-4">
+
+                <% topSkills.forEach(skill => { %>
+
+                    <div class="col-md-4 mb-3">
+
+                        <div class="card">
+
+                            <div class="card-body">
+
+                                <h5>
+                                    <%= skill[0] %>
+                                </h5>
+
+                                <div class="progress">
+
+                                    <div
+                                        class="progress-bar"
+                                        style="width: <%= skill[1] %>%"
+                                    >
+
+                                        <%= skill[1] %>%
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
                     </div>
-                </div>
+
+                <% }) %>
+
             </div>
 
-            <div class="col-md-3">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h6>TOP DEMAND</h6>
-                        <h2> 85% </h2>
-                        <p class="text-muted mb-0">Highest skill demand</p>
-                    </div>
-                </div>
-            </div>
-         </div>
+        </div>
 
-        <!-- Main Actions -->
-         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h4>📊 Industry Demand</h4>
-                        <p class="text-muted">Analyze the skills currently demanded by the industry.</p>
-                         <a href="/skills" class="btn btn-primary"> View Skill Demand</a>
-                    </div>
-                </div>
-            </div>
+    </div>
 
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h4> 🎯 Skill Gap</h4>
-                        <p class="text-muted">Identify skills demanded by industry but missing from the curriculum.</p>
-                         <a href="/skill-gap" class="btn btn-warning">Analyse Skill Gap</a>
-                    </div>
-                </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h4>💡 Recommendations</h4>
-                        <p class="text-muted">Get curriculum and training recommendations.</p>
-                         <a href="/recommendations" class="btn btn-success">View Recommendations</a>
-                    </div>
-                </div>
-            </div>
+    <!-- DISTRICT PLAN -->
 
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h4>Live Analysis</h4>
-                        <p class="text-muted">Get Live Skill Gap Analysis data from Job Postings.</p>
-                        <a href="/live-analysis" class="btn btn-dark m-2">Live Analysis</a>
-                    </div>
-                </div>
-            </div>
+    <div class="card shadow-sm mb-5">
 
-         </div>
-    <% }) %>
+        <div class="card-body">
+
+            <h3>
+                District Training Intelligence
+            </h3>
+
+            <p>
+                District:
+                <strong>
+                    <%= trainingPlan.district %>
+                </strong>
+            </p>
+
+            <p>
+                Course:
+                <strong>
+                    <%= trainingPlan.course %>
+                </strong>
+            </p>
+
+            <p>
+                Training Priority:
+                <span class="badge bg-danger">
+
+                    <%= trainingPlan.trainingLevel %>
+
+                </span>
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <div class="text-center">
+
+        <a href="/job-posting"
+           class="btn btn-primary m-2">
+
+            Add Job Posting
+
+        </a>
+
+
+        <a href="/live-analysis"
+           class="btn btn-dark m-2">
+
+            Live Analysis
+
+        </a>
+
+
+        <a href="/skill-gap"
+           class="btn btn-warning m-2">
+
+            Skill Gap
+
+        </a>
+
+
+        <a href="/recommendations"
+           class="btn btn-success m-2">
+
+            Recommendations
+
+        </a>
+
+
+        <a href="/employer-feedback"
+           class="btn btn-info m-2">
+
+            Employer Feedback
+
+        </a>
+
+
+        <a href="/district-plan"
+           class="btn btn-secondary m-2">
+
+            District Plan
+
+        </a>
+
+
+        <a href="/placement-outcome"
+           class="btn btn-primary m-2">
+
+            Placement Outcome
+
+        </a>
+
+
+        <a href="/placement-effectiveness"
+           class="btn btn-success m-2">
+
+            Placement Effectiveness
+
+        </a>
+        <a href="/district-demand" class="btn btn-info m-2">District-wise Demand </a>
+
+        <a href="/role-demand"
+           class="btn btn-info m-2">
+           Role-wise Demand
+        </a>
+    </div>
 </div>
