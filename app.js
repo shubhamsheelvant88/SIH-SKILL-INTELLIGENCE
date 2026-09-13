@@ -1,4 +1,6 @@
 require("dotenv").config();
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '1.1.1.1']); // DNS fix for Atlas
 const express = require("express");
 const app = express();
 const path = require("path");
