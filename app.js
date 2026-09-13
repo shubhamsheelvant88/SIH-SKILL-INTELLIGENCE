@@ -1,10 +1,11 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
 const engine = require("ejs-mate");
 const SkillDemand = require("./models/skillDemand");
-const EmployerFeedback = require("./models/employerFeedback");
+const EmployerFeedback = require("./models/EmployerFeedback");
 const JobPosting = require("./models/jobPosting");
 const PlacementOutcome = require("./models/placementOutcome");
 
@@ -16,12 +17,44 @@ app.set("views", path.join(__dirname, "/views"));
 app.use(express.static("public"));
 
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/skill-intelligence";
+const MONGO_URL = process.env.MONGO_URI;
+
+const defaultCurriculum = {
+  district: "Bengaluru",
+  sector: "IT",
+  course: "Full Stack Development",
+  industryDemand: {
+    JavaScript: 85,
+    React: 72,
+    "Node.js": 68,
+    MongoDB: 51,
+    AWS: 45,
+    Docker: 38,
+    TypeScript: 34
+  },
+  currentCurriculum: [
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "Node.js",
+    "MongoDB"
+  ]
+};
+
+async function getOrSeedCurriculum() {
+  let skillData = await SkillDemand.findOne({});
+  if (!skillData) {
+    skillData = await SkillDemand.create(defaultCurriculum);
+    console.log("Default curriculum data seeded successfully");
+  }
+  return skillData;
+}
 
 async function main() {
   try {
     await mongoose.connect(MONGO_URL);
     console.log("Connected to DB");
+    await getOrSeedCurriculum();
   } catch (err) {
     console.error("DB connection failed:", err);
     process.exit(1);
@@ -34,13 +67,14 @@ main();
 function calculateSkillGaps(industryDemand, currentCurriculum) {
 
   // converting every skill of curr curriculum to lower case and stroing it in set
+  const curriculum = Array.isArray(currentCurriculum) ? currentCurriculum : [];
   const curriculumSet  = new Set(
-    currentCurriculum.map(skill => skill.toLowerCase())
+    curriculum.map(skill => skill.toLowerCase())
   );
 
   let gaps = [];
 
-  for([skill, demand] of  Object.entries(industryDemand)) {
+  for(const [skill, demand] of Object.entries(industryDemand || {})) {
     // if skill not in current curriculum
     if(!curriculumSet.has(skill.toLowerCase())) {
       let priority;
@@ -181,13 +215,14 @@ function calculateIndustryDemand(jobs) {
 // Calculate live skill gaps from the job posting data
 function calculateLiveSkillGaps(industryDemand, currentCurriculum) {
 
+  const curriculum = Array.isArray(currentCurriculum) ? currentCurriculum : [];
   const curriculumSet = new Set(
-    currentCurriculum.map(skill => skill.toLowerCase())
+    curriculum.map(skill => skill.toLowerCase())
   );
 
   const gaps = [];
 
-  for(let skill in industryDemand) {
+  for(let skill in (industryDemand || {})) {
     // if skill not in current curriculum
     if(!curriculumSet.has(skill.toLowerCase())) {
       let priority;
@@ -417,7 +452,7 @@ function calculateRoleDemand(jobs) {
 
 
 app.get("/", (req, res) => {
-  res.send("rout is working");
+  res.render("index");
 });
 
 app.get("/home", (req, res) => {
@@ -426,7 +461,11 @@ app.get("/home", (req, res) => {
 
 
 app.get("/skills" , async (req, res) => {
-  const skillData = await SkillDemand.find({});
+  let skillData = await SkillDemand.find({});
+  if (skillData.length === 0) {
+    const defaultDoc = await getOrSeedCurriculum();
+    skillData = [defaultDoc];
+  }
   res.render("skills", {skillData});
 });
 
@@ -440,11 +479,7 @@ app.get("/dashboard", async (req, res) => {
 
 
     // Get curriculum
-    const skillData = await SkillDemand.findOne({});
-
-    if (!skillData) {
-        return res.send("No curriculum data found.");
-    }
+    const skillData = await getOrSeedCurriculum();
 
 
     // Calculate skill gaps
@@ -517,7 +552,11 @@ app.get("/dashboard", async (req, res) => {
 });
 
 app.get("/skill-gap", async (req, res) => {
-  const skillData = await SkillDemand.find({});
+  let skillData = await SkillDemand.find({});
+  if (skillData.length === 0) {
+    const defaultDoc = await getOrSeedCurriculum();
+    skillData = [defaultDoc];
+  }
 
   let results = skillData.map(data => {
 
@@ -533,7 +572,11 @@ app.get("/skill-gap", async (req, res) => {
 
 app.get("/recommendations", async (req, res) => {
 
-  const skillData = await SkillDemand.find({});
+  let skillData = await SkillDemand.find({});
+  if (skillData.length === 0) {
+    const defaultDoc = await getOrSeedCurriculum();
+    skillData = [defaultDoc];
+  }
 
   let results = skillData.map(data => {
 
@@ -557,7 +600,7 @@ app.get("/employer-feedback", (req, res) => {
 app.post("/employer-feedback", async (req, res) => {
   const {company, role, skills, feedback} = req.body;
 
-  const skillList = skills
+  const skillList = (skills || "")
   .split(",")
   .map(skill => skill.trim())
   .filter(skill => skill !== "");
@@ -586,7 +629,11 @@ app.get("/employers", async (req, res) => {
 });
 
 app.get("/validated-gap", async (req, res) => {
-  const skillData = await SkillDemand.find({});
+  let skillData = await SkillDemand.find({});
+  if (skillData.length === 0) {
+    const defaultDoc = await getOrSeedCurriculum();
+    skillData = [defaultDoc];
+  }
 
   const feedbacks = await EmployerFeedback.find({});
 
@@ -610,7 +657,7 @@ app.get("/job-posting", (req, res) => {
 app.post("/job-posting", async (req, res) => {
   let {company, role, location, description} = req.body;
 
-  let extractedSkills = extractSkills(description);
+  let extractedSkills = extractSkills(description || "");
 
   const jobPosting = new JobPosting({
     company : company,
@@ -622,7 +669,7 @@ app.post("/job-posting", async (req, res) => {
 
   await jobPosting.save();
 
-  res.redirect("job-postings");
+  res.redirect("/job-postings");
 });
 
 app.get("/job-postings", async (req, res) => {
@@ -646,11 +693,7 @@ app.get("/live-analysis", async (req, res) => {
 
   const industryDemand = calculateIndustryDemand(jobs);
 
-  const skillData = await SkillDemand.findOne({});
-
-  if (!skillData) {
-    return res.send("No curriculum data found.");
-  }
+  const skillData = await getOrSeedCurriculum();
 
   const gaps = calculateLiveSkillGaps(industryDemand, skillData.currentCurriculum);
 
@@ -667,11 +710,7 @@ app.get("/district-plan", async (req, res) => {
 
   const industryDemand = calculateIndustryDemand(jobs);
 
-  const skillData = await SkillDemand.findOne({});
-
-  if (!skillData || !Array.isArray(skillData.currentCurriculum)) {
-    return res.send("No curriculum data found.");
-  }
+  const skillData = await getOrSeedCurriculum();
 
   const gaps = calculateLiveSkillGaps(industryDemand, skillData.currentCurriculum);
 
@@ -733,11 +772,7 @@ app.get("/placement-effectiveness", async (req, res) => {
 
   const industryDemand = calculateIndustryDemand(jobs);
 
-  const skillData = await SkillDemand.findOne({});
-
-  if (!skillData) {
-    return res.send("No curriculum data found.");
-  }
+  const skillData = await getOrSeedCurriculum();
 
   const gaps = calculateLiveSkillGaps(
     industryDemand,

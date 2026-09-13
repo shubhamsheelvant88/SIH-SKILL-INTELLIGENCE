@@ -50,8 +50,9 @@
 
                 <h5>Skills Used</h5>
 
-                <% if(result.outcome.skillUsed) { %>
-                <% outcome.skillUsed.forEach(skill => { %>
+                <% const skills = result.outcome.skillsUsed || result.outcome.skillUsed || []; %>
+                <% if(skills.length > 0) { %>
+                <% skills.forEach(skill => { %>
                     <span class="badge bg-primary me-1"><%= skill %></span>
                 <%})%>
                 <%}%>
