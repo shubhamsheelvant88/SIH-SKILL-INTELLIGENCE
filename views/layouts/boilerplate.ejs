@@ -3,16 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skill Intelligence</title>
+    <title>Skill Intelligence | Labour-Market Intelligence & Curriculum Alignment</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231e3a8a'/><rect x='20' y='55' width='15' height='30' rx='3' fill='%23f59e0b'/><rect x='42' y='35' width='15' height='50' rx='3' fill='%23ffffff'/><rect x='64' y='45' width='15' height='40' rx='3' fill='%23f59e0b'/></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" 
-    rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" 
-    crossorigin="anonymous">
 </head>
 <body>
-    <%- body %> 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" 
-    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" 
-    crossorigin="anonymous"></script>
+
+    <!-- ===== SIDEBAR (offcanvas on mobile, fixed on desktop) ===== -->
+    <div class="offcanvas offcanvas-start sidebar-offcanvas" tabindex="-1" id="appSidebar" aria-label="Navigation sidebar">
+        <div class="offcanvas-header sidebar-header">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Skill Intelligence</span>
+                    <span class="brand-sub">SIH 2026</span>
+                </div>
+            </div>
+            <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+
+        <div class="offcanvas-body sidebar-body">
+            <nav class="sidebar-nav">
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Overview</div>
+                    <a href="/dashboard" class="sidebar-link"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
+                    <a href="/live-analysis" class="sidebar-link"><i class="bi bi-activity"></i><span>Live Analysis</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Demand Intelligence</div>
+                    <a href="/industry-demand" class="sidebar-link"><i class="bi bi-bar-chart-line"></i><span>Industry Demand</span></a>
+                    <a href="/role-demand" class="sidebar-link"><i class="bi bi-person-badge"></i><span>Role-wise Demand</span></a>
+                    <a href="/district-demand" class="sidebar-link"><i class="bi bi-geo-alt"></i><span>District-wise Demand</span></a>
+                    <a href="/skills" class="sidebar-link"><i class="bi bi-lightbulb"></i><span>Skills Demand</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Skill & Curriculum</div>
+                    <a href="/skill-gap" class="sidebar-link"><i class="bi bi-exclamation-triangle"></i><span>Skill Gap</span></a>
+                    <a href="/recommendations" class="sidebar-link"><i class="bi bi-journal-check"></i><span>Recommendations</span></a>
+                    <a href="/validated-gap" class="sidebar-link"><i class="bi bi-patch-check"></i><span>Validated Gaps</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Training & Outcomes</div>
+                    <a href="/district-plan" class="sidebar-link"><i class="bi bi-map"></i><span>District Training Plan</span></a>
+                    <a href="/placement-outcomes" class="sidebar-link"><i class="bi bi-mortarboard"></i><span>Placement Outcomes</span></a>
+                    <a href="/placement-effectiveness" class="sidebar-link"><i class="bi bi-graph-up"></i><span>Placement Effectiveness</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Data Collection</div>
+                    <a href="/job-posting" class="sidebar-link"><i class="bi bi-plus-square"></i><span>Add Job Posting</span></a>
+                    <a href="/job-postings" class="sidebar-link"><i class="bi bi-list-ul"></i><span>Job Postings</span></a>
+                    <a href="/employer-feedback" class="sidebar-link"><i class="bi bi-chat-square-text"></i><span>Employer Feedback</span></a>
+                    <a href="/employers" class="sidebar-link"><i class="bi bi-people"></i><span>Employer Validations</span></a>
+                    <a href="/placement-outcome" class="sidebar-link"><i class="bi bi-clipboard-data"></i><span>Placement Outcome</span></a>
+                </div>
+
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-footer-badge">
+                <i class="bi bi-shield-check"></i>
+                <span>Smart India Hackathon 2026</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAIN WRAPPER ===== -->
+    <div class="main-wrapper">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="btn btn-icon d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#appSidebar" aria-controls="appSidebar" aria-label="Toggle navigation">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="topbar-title">
+                    <h1 id="pageTitle">Skill Intelligence</h1>
+                    <p>Labour-Market Intelligence & Curriculum Alignment Platform</p>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <span class="sih-badge">
+                    <i class="bi bi-award"></i>
+                    <span>SIH 2026</span>
+                </span>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="main-content">
+            <%- body %>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-inner">
+                <span>© 2026 Skill Intelligence · Smart India Hackathon</span>
+                <span class="footer-links">
+                    <a href="/dashboard">Dashboard</a>
+                    <span class="footer-sep">•</span>
+                    <a href="/live-analysis">Live Analysis</a>
+                    <span class="footer-sep">•</span>
+                    <a href="/recommendations">Recommendations</a>
+                </span>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script>
+        // Highlight the current page in the sidebar and update the topbar title
+        (function () {
+            var path = window.location.pathname;
+            var links = document.querySelectorAll('.sidebar-link');
+            var activeFound = false;
+
+            links.forEach(function (link) {
+                var href = link.getAttribute('href');
+                if (href && href === path) {
+                    link.classList.add('active');
+                    link.setAttribute('aria-current', 'page');
+                    activeFound = true;
+
+                    var label = link.querySelector('span');
+                    if (label) {
+                        var titleEl = document.getElementById('pageTitle');
+                        if (titleEl) titleEl.textContent = label.textContent;
+                        document.title = label.textContent + ' | Skill Intelligence';
+                    }
+                }
+            });
+
+            if (!activeFound) {
+                var titleEl = document.getElementById('pageTitle');
+                if (titleEl) titleEl.textContent = 'Skill Intelligence';
+                document.title = 'Skill Intelligence | Labour-Market Intelligence & Curriculum Alignment';
+            }
+        })();
+    </script>
 </body>
 </html>

@@ -1,242 +1,362 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="container mt-5">
+<div class="container-fluid px-0">
 
-    <div class="text-center mb-5">
-
-        <h1>Skill Intelligence Dashboard</h1>
-
-        <p class="text-muted">
-            From Industry Demand → To Better Training
-        </p>
-
+    <!-- ===== 1. HERO / PAGE HEADER ===== -->
+    <div class="page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">
+                <i class="bi bi-speedometer2"></i>
+                Labour-Market Intelligence Dashboard
+            </h1>
+            <p class="mb-0">
+                Converting industry demand into actionable training insights — from what the market needs to what learners should be taught.
+            </p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <span class="skill-chip">
+                <i class="bi bi-geo-alt"></i>
+                <%= data.district %>
+            </span>
+            <span class="skill-chip">
+                <i class="bi bi-mortarboard"></i>
+                <%= data.course %>
+            </span>
+        </div>
     </div>
 
-
-    <!-- SUMMARY CARDS -->
-
-    <div class="row mb-5">
-
-        <div class="col-md-4 mb-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h5>Job Postings Analysed</h5>
-
-                    <h2>
-                        <%= totalJobs %>
-                    </h2>
-
-                </div>
-
+    <!-- ===== 2. KPI CARDS ===== -->
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="bi bi-briefcase"></i></div>
+                <div class="stat-label">Total Job Postings</div>
+                <div class="stat-value"><%= totalJobs %></div>
+                <div class="stat-trend text-muted">Analysed for skill demand</div>
             </div>
-
         </div>
-
-
-        <div class="col-md-4 mb-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h5>Skill Gaps Detected</h5>
-
-                    <h2>
-                        <%= totalGaps %>
-                    </h2>
-
-                </div>
-
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon saffron"><i class="bi bi-exclamation-triangle"></i></div>
+                <div class="stat-label">Skill Gaps Identified</div>
+                <div class="stat-value"><%= totalGaps %></div>
+                <div class="stat-trend text-muted">Missing from curriculum</div>
             </div>
-
         </div>
-
-
-        <div class="col-md-4 mb-3">
-
-            <div class="card shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h5>Placement Rate</h5>
-
-                    <h2>
-                        <%= placementRate %>%
-                    </h2>
-
-                </div>
-
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="bi bi-graph-up-arrow"></i></div>
+                <div class="stat-label">Placement Rate</div>
+                <div class="stat-value"><%= placementRate %>%</div>
+                <div class="stat-trend text-muted">Students placed vs completed</div>
             </div>
-
         </div>
-
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon info"><i class="bi bi-mortarboard"></i></div>
+                <div class="stat-label">Current Course</div>
+                <div class="stat-value" style="font-size:1.35rem; line-height:1.3;"><%= data.course %></div>
+                <div class="stat-trend text-muted"><%= data.sector %> sector</div>
+            </div>
+        </div>
     </div>
 
+    <!-- ===== 3 & 4. TOP SKILLS + SKILL GAP PRIORITY ===== -->
+    <div class="row g-4 mb-4">
 
-    <!-- TOP SKILLS -->
-
-    <div class="card shadow-sm mb-5">
-
-        <div class="card-body">
-
-            <h3>
-                Top In-Demand Skills
-            </h3>
-
-            <div class="row mt-4">
-
-                <% topSkills.forEach(skill => { %>
-
-                    <div class="col-md-4 mb-3">
-
-                        <div class="card">
-
-                            <div class="card-body">
-
-                                <h5>
-                                    <%= skill[0] %>
-                                </h5>
-
-                                <div class="progress">
-
-                                    <div
-                                        class="progress-bar"
-                                        style="width: <%= skill[1] %>%"
-                                    >
-
-                                        <%= skill[1] %>%
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
+        <!-- Top Industry Skills -->
+        <div class="col-lg-7">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="dashboard-section-title">
+                        <i class="bi bi-bar-chart-line"></i>
+                        Top Industry Skills
                     </div>
 
-                <% }) %>
+                    <% if (topSkills.length === 0) { %>
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No job posting data available yet. Add a job posting to see skill demand.
+                        </div>
+                    <% } else { %>
+                        <!-- Chart.js bar chart -->
+                        <div class="chart-container mb-4" style="position:relative; height:220px;">
+                            <canvas id="topSkillsChart"></canvas>
+                        </div>
 
+                        <!-- Ranked skill list -->
+                        <div class="mt-2">
+                            <% topSkills.forEach((skill, index) => { %>
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <span class="rank-badge"><%= index + 1 %></span>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="fw-semibold"><%= skill[0] %></span>
+                                            <span class="fw-bold text-primary"><%= skill[1] %>%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: <%= skill[1] %>%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skill Gap Priority -->
+        <div class="col-lg-5">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="dashboard-section-title">
+                        <i class="bi bi-exclamation-diamond"></i>
+                        Skill Gap Priority
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="text-muted small fw-semibold text-uppercase mb-2">Training Priority Level</div>
+                        <% if (trainingPlan.trainingLevel === "High Training Priority") { %>
+                            <span class="priority-pill high"><i class="bi bi-flag-fill"></i> <%= trainingPlan.trainingLevel %></span>
+                        <% } else if (trainingPlan.trainingLevel === "Moderate Training Priority") { %>
+                            <span class="priority-pill medium"><i class="bi bi-flag"></i> <%= trainingPlan.trainingLevel %></span>
+                        <% } else { %>
+                            <span class="priority-pill low"><i class="bi bi-check-circle"></i> <%= trainingPlan.trainingLevel %></span>
+                        <% } %>
+                    </div>
+
+                    <div class="text-muted small fw-semibold text-uppercase mb-2">Skills to Prioritize</div>
+                    <% if (trainingPlan.skillsToTrain.length === 0) { %>
+                        <div class="alert alert-success mb-0">
+                            <i class="bi bi-check-circle me-2"></i>
+                            No major skill gaps detected. Curriculum is well aligned.
+                        </div>
+                    <% } else { %>
+                        <div class="d-flex flex-wrap gap-2">
+                            <% trainingPlan.skillsToTrain.forEach(skill => { %>
+                                <span class="skill-chip"><i class="bi bi-lightning-charge"></i> <%= skill %></span>
+                            <% }) %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 5. DISTRICT TRAINING PLAN ===== -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="dashboard-section-title">
+                <i class="bi bi-map"></i>
+                District Training Plan
             </div>
 
-        </div>
+            <div class="row g-4">
+                <!-- Training priority -->
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="stat-icon saffron" style="width:40px;height:40px;font-size:1.1rem;margin-bottom:0;"><i class="bi bi-flag"></i></div>
+                        <div>
+                            <div class="text-muted small fw-semibold text-uppercase mb-1">Training Priority</div>
+                            <% if (trainingPlan.trainingLevel === "High Training Priority") { %>
+                                <span class="badge bg-danger"><%= trainingPlan.trainingLevel %></span>
+                            <% } else if (trainingPlan.trainingLevel === "Moderate Training Priority") { %>
+                                <span class="badge bg-warning"><%= trainingPlan.trainingLevel %></span>
+                            <% } else { %>
+                                <span class="badge bg-success"><%= trainingPlan.trainingLevel %></span>
+                            <% } %>
+                            <p class="text-muted small mt-2 mb-0">
+                                <i class="bi bi-geo-alt me-1"></i><%= trainingPlan.district %>
+                                <span class="mx-1">·</span>
+                                <i class="bi bi-mortarboard me-1"></i><%= trainingPlan.course %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Trainer requirements -->
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="stat-icon blue" style="width:40px;height:40px;font-size:1.1rem;margin-bottom:0;"><i class="bi bi-person-workspace"></i></div>
+                        <div>
+                            <div class="text-muted small fw-semibold text-uppercase mb-1">Trainer Requirements</div>
+                            <% if (trainingPlan.trainerRequirements.length === 0) { %>
+                                <p class="text-muted small mb-0">No additional trainer requirements identified.</p>
+                            <% } else { %>
+                                <ul class="list-unstyled mb-0 small">
+                                    <% trainingPlan.trainerRequirements.forEach(trainer => { %>
+                                        <li class="mb-1"><i class="bi bi-check2-circle text-success me-1"></i><%= trainer %></li>
+                                    <% }) %>
+                                </ul>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equipment requirements -->
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="stat-icon green" style="width:40px;height:40px;font-size:1.1rem;margin-bottom:0;"><i class="bi bi-pc-display"></i></div>
+                        <div>
+                            <div class="text-muted small fw-semibold text-uppercase mb-1">Equipment Requirements</div>
+                            <% if (trainingPlan.equipmentRequirements.length === 0) { %>
+                                <p class="text-muted small mb-0">No additional equipment requirements identified.</p>
+                            <% } else { %>
+                                <ul class="list-unstyled mb-0 small">
+                                    <% trainingPlan.equipmentRequirements.forEach(equipment => { %>
+                                        <li class="mb-1"><i class="bi bi-check2-circle text-success me-1"></i><%= equipment %></li>
+                                    <% }) %>
+                                </ul>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- ===== 6. QUICK ACTIONS ===== -->
+    <div class="mb-4">
+        <div class="dashboard-section-title">
+            <i class="bi bi-lightning"></i>
+            Quick Actions
+        </div>
 
-    <!-- DISTRICT PLAN -->
+        <div class="row g-3">
+            <div class="col-sm-6 col-lg-4 col-xl-2">
+                <a href="/live-analysis" class="action-card">
+                    <i class="bi bi-activity"></i>
+                    <span>Live Analysis</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 col-xl-2">
+                <a href="/skill-gap" class="action-card">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <span>Skill Gap Analysis</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 col-xl-2">
+                <a href="/recommendations" class="action-card">
+                    <i class="bi bi-journal-check"></i>
+                    <span>Recommendations</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 col-xl-2">
+                <a href="/validated-gap" class="action-card">
+                    <i class="bi bi-patch-check"></i>
+                    <span>Employer Validation</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 col-xl-2">
+                <a href="/district-plan" class="action-card">
+                    <i class="bi bi-map"></i>
+                    <span>District Plan</span>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4 col-xl-2">
+                <a href="/placement-effectiveness" class="action-card">
+                    <i class="bi bi-graph-up"></i>
+                    <span>Placement Effectiveness</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
-    <div class="card shadow-sm mb-5">
-
+    <!-- ===== 7. INTELLIGENCE PIPELINE ===== -->
+    <div class="card">
         <div class="card-body">
+            <div class="dashboard-section-title">
+                <i class="bi bi-diagram-3"></i>
+                Intelligence Pipeline
+            </div>
+            <p class="text-muted small mb-4">How raw labour-market data becomes actionable training decisions.</p>
 
-            <h3>
-                District Training Intelligence
-            </h3>
-
-            <p>
-                District:
-                <strong>
-                    <%= trainingPlan.district %>
-                </strong>
-            </p>
-
-            <p>
-                Course:
-                <strong>
-                    <%= trainingPlan.course %>
-                </strong>
-            </p>
-
-            <p>
-                Training Priority:
-                <span class="badge bg-danger">
-
-                    <%= trainingPlan.trainingLevel %>
-
-                </span>
-            </p>
-
+            <div class="pipeline-flow">
+                <% const pipelineSteps = [
+                    { icon: "bi-database", label: "Job Data", desc: "Postings collected" },
+                    { icon: "bi-bar-chart", label: "Skill Demand", desc: "Demand calculated" },
+                    { icon: "bi-exclamation-triangle", label: "Skill Gap", desc: "Gaps identified" },
+                    { icon: "bi-journal-check", label: "Curriculum Recs", desc: "Updates suggested" },
+                    { icon: "bi-patch-check", label: "Employer Validation", desc: "Industry confirms" },
+                    { icon: "bi-map", label: "Training Plan", desc: "District plan built" },
+                    { icon: "bi-graph-up", label: "Placement Feedback", desc: "Outcomes measured" }
+                ]; %>
+                <% pipelineSteps.forEach((step, index) => { %>
+                    <div class="pipeline-step">
+                        <div class="pipeline-icon"><i class="bi <%= step.icon %>"></i></div>
+                        <div class="pipeline-label"><%= step.label %></div>
+                        <div class="pipeline-desc"><%= step.desc %></div>
+                    </div>
+                    <% if (index < pipelineSteps.length - 1) { %>
+                        <div class="pipeline-arrow"><i class="bi bi-chevron-right"></i></div>
+                    <% } %>
+                <% }) %>
+            </div>
         </div>
-
     </div>
 
-
-    <!-- NAVIGATION -->
-
-    <div class="text-center">
-
-        <a href="/job-posting"
-           class="btn btn-primary m-2">
-
-            Add Job Posting
-
-        </a>
-
-
-        <a href="/live-analysis"
-           class="btn btn-dark m-2">
-
-            Live Analysis
-
-        </a>
-
-
-        <a href="/skill-gap"
-           class="btn btn-warning m-2">
-
-            Skill Gap
-
-        </a>
-
-
-        <a href="/recommendations"
-           class="btn btn-success m-2">
-
-            Recommendations
-
-        </a>
-
-
-        <a href="/employer-feedback"
-           class="btn btn-info m-2">
-
-            Employer Feedback
-
-        </a>
-
-
-        <a href="/district-plan"
-           class="btn btn-secondary m-2">
-
-            District Plan
-
-        </a>
-
-
-        <a href="/placement-outcome"
-           class="btn btn-primary m-2">
-
-            Placement Outcome
-
-        </a>
-
-
-        <a href="/placement-effectiveness"
-           class="btn btn-success m-2">
-
-            Placement Effectiveness
-
-        </a>
-        <a href="/district-demand" class="btn btn-info m-2">District-wise Demand </a>
-
-        <a href="/role-demand"
-           class="btn btn-info m-2">
-           Role-wise Demand
-        </a>
-    </div>
 </div>
+
+<!-- ===== CHART SCRIPT (uses existing topSkills data) ===== -->
+<% if (topSkills.length > 0) { %>
+<script>
+    (function () {
+        var labels = <%- JSON.stringify(topSkills.map(function (s) { return s[0]; })) %>;
+        var values = <%- JSON.stringify(topSkills.map(function (s) { return s[1]; })) %>;
+
+        var canvas = document.getElementById('topSkillsChart');
+        if (!canvas || typeof Chart === 'undefined') return;
+
+        var ctx = canvas.getContext('2d');
+        var gradient = ctx.createLinearGradient(0, 0, 0, 220);
+        gradient.addColorStop(0, '#1e3a8a');
+        gradient.addColorStop(1, '#3b5bdb');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Demand (%)',
+                    data: values,
+                    backgroundColor: gradient,
+                    borderColor: '#1e3a8a',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    maxBarThickness: 42
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return ' Demand: ' + context.parsed.y + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(226, 232, 240, 0.6)' },
+                        ticks: {
+                            callback: function (value) { return value + '%'; },
+                            font: { size: 11 }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 12, weight: '600' } }
+                    }
+                }
+            }
+        });
+    })();
+</script>
+<% } %>
