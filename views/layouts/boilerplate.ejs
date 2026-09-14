@@ -1,88 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skill Intelligence</title>
-  
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Intelligence</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" 
+    rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" 
+    crossorigin="anonymous">
 </head>
-<body class="bg-light">
-
-  <!-- Shared Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 py-2 border-bottom border-secondary">
-    <div class="container-fluid">
-      <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
-        <span class="text-danger fs-5">🎯</span> Skill Intelligence
-      </a>
-      
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0 text-secondary">
-          <li class="nav-item">
-            <a class="nav-link text-white-50" href="/dashboard">Dashboard</a>
-          </li>
-          
-          <!-- Dropdown 1 -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-white-50" href="#" data-bs-toggle="dropdown">Skills & Curriculum</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/skills">Skills</a></li>
-              <li><a class="dropdown-item" href="/skill-gap">Skill Gap</a></li>
-              <li><a class="dropdown-item" href="/validated-gaps">Validated Gaps</a></li>
-            </ul>
-          </li>
-
-          <!-- Dropdown 2 -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-white-50" href="#" data-bs-toggle="dropdown">Job Market Intelligence</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/industry-demand">Industry Demand</a></li>
-              <li><a class="dropdown-item" href="/job-postings">Job Postings</a></li>
-              <li><a class="dropdown-item" href="/role-demand">Role Demand</a></li>
-            </ul>
-          </li>
-
-          <!-- Dropdown 3 -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-white-50" href="#" data-bs-toggle="dropdown">Employer Validation</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/employers">Employers</a></li>
-              <li><a class="dropdown-item" href="/employer-feedback">Employer Feedback</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link text-white-50" href="/district-plan">District Plan</a>
-          </li>
-
-          <!-- Dropdown 4 -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-white-50" href="#" data-bs-toggle="dropdown">Placements</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/placement-outcomes">Placement Outcomes</a></li>
-              <li><a class="dropdown-item" href="/placement-effectiveness">Placement Effectiveness</a></li>
-            </ul>
-          </li>
-        </ul>
-
-        <a href="/live-analysis" class="btn btn-outline-info btn-sm">Live Intelligence</a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Body Content -->
-  <main>
-    <%- body %>
-  </main>
-
-  <!-- Bootstrap 5 JS Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/bootstrap.bundle.min.js"></script>
+<body>
+    <%- body %> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" 
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" 
+    crossorigin="anonymous"></script>
 </body>
 </html>
