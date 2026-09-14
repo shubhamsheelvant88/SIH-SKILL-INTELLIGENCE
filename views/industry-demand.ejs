@@ -1,41 +1,151 @@
 <% layout('layouts/boilerplate') %>
 
+<div class="container-fluid px-0">
 
-<div class="container mt-5">
-    <div class="text-center mb-5">
-        <h1>Industry Skill Demand</h1>
-
-        <p class="text-muted">Automatically calculated from submitted job postings</p>
-    </div>
-
-    <div class="alert alert-info">
-        Total Job Postings Analyzed :
-        <strong><%= totalJobs %></strong>
-    </div>
-
-
-    <% if(Object.keys(industryDemand).length === 0) { %>
-        <div class="alert alert-warning">
-            No job postings available for analysis.
+    <!-- ===== HEADER ===== -->
+    <div class="page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="mb-1"><i class="bi bi-bar-chart-line"></i> Industry Skill Demand</h1>
+            <p class="mb-0">Skills most frequently appearing across analyzed job postings</p>
         </div>
+        <span class="skill-chip"><i class="bi bi-briefcase"></i> <%= totalJobs %> postings analysed</span>
+    </div>
+
+    <% if (Object.keys(industryDemand).length === 0) { %>
+
+        <!-- ===== EMPTY STATE ===== -->
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <div class="stat-icon blue mx-auto mb-3" style="width:64px;height:64px;font-size:1.8rem;"><i class="bi bi-inbox"></i></div>
+                <h5 class="mb-2">No Demand Data Available</h5>
+                <p class="text-muted mb-4">Add job postings to start computing industry skill demand.</p>
+                <a href="/job-posting" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Add Job Posting</a>
+            </div>
+        </div>
+
     <% } else { %>
-        <div class="row">
-            <% Object.entries(industryDemand).sort((a, b) => b[1] - a[1]).forEach(([skill, demand]) => { %>
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5><%= skill %></h5>
 
-                            <h3><%= demand %></h3>
+        <%
+        const demandEntries = Object.entries(industryDemand).sort((a, b) => b[1] - a[1]);
+        const topSkill = demandEntries.length > 0 ? demandEntries[0][0] : "—";
+        const topDemand = demandEntries.length > 0 ? demandEntries[0][1] : 0;
+        %>
 
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: <%= demand %>%"><%= demand %>%</div>
-                            </div>
-                            
+        <!-- ===== KPI STRIP ===== -->
+        <div class="row g-4 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="bi bi-briefcase"></i></div>
+                    <div class="stat-label">Total Job Postings</div>
+                    <div class="stat-value"><%= totalJobs %></div>
+                    <div class="stat-trend text-muted">Analysed for demand</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon saffron"><i class="bi bi-collection"></i></div>
+                    <div class="stat-label">Distinct Skills</div>
+                    <div class="stat-value"><%= Object.keys(industryDemand).length %></div>
+                    <div class="stat-trend text-muted">Detected in postings</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="bi bi-trophy"></i></div>
+                    <div class="stat-label">Top Skill</div>
+                    <div class="stat-value" style="font-size:1.35rem; line-height:1.3;"><%= topSkill %></div>
+                    <div class="stat-trend text-muted">Leading the demand</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon red"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div class="stat-label">Peak Demand</div>
+                    <div class="stat-value"><%= topDemand %>%</div>
+                    <div class="stat-trend text-muted">Highest percentage</div>
+                </div>
+            </div>
+        </div>
+<!-- ===== CHART + RANKED LIST ===== -->
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="dashboard-section-title"><i class="bi bi-bar-chart"></i> Skill Demand Distribution</div>
+                        <div class="chart-container" style="height:320px;">
+                            <canvas id="industryDemandChart"></canvas>
                         </div>
                     </div>
                 </div>
-            <% }) %>
+            </div>
+            <div class="col-lg-5">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="dashboard-section-title"><i class="bi bi-list-ol"></i> Demand Ranking</div>
+                        <% demandEntries.forEach((item, index) => { %>
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <span class="rank-badge"><%= index + 1 %></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-semibold"><%= item[0] %></span>
+                                        <span class="fw-bold text-primary"><%= item[1] %>%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: <%= item[1] %>%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
         </div>
+
     <% } %>
+
 </div>
+<!-- ===== CHART SCRIPT ===== -->
+<% if (Object.keys(industryDemand).length > 0) { %>
+<script>
+    (function () {
+        if (typeof Chart === 'undefined') return;
+        var demandData = <%- JSON.stringify(industryDemand) %>;
+        var entries = Object.entries(demandData).sort(function (a, b) { return a[1] - b[1]; });
+        var canvas = document.getElementById('industryDemandChart');
+        if (!canvas) return;
+        new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: entries.map(function (e) { return e[0]; }),
+                datasets: [{
+                    label: 'Demand (%)',
+                    data: entries.map(function (e) { return e[1]; }),
+                    backgroundColor: 'rgba(30, 58, 138, 0.75)',
+                    borderColor: '#1e3a8a',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    maxBarThickness: 20
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: function (context) { return ' Demand: ' + context.parsed.x + '%'; } } }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(226,232,240,0.6)' },
+                        ticks: { callback: function (value) { return value + '%'; } }
+                    },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+    })();
+</script>
+<% } %>

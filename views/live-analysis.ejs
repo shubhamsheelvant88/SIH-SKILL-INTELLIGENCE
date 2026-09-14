@@ -1,73 +1,237 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="cotainer mt-5">
-    <div class="text-center mb-5">
-        <h1>Live Labour Market Analysis</h1>
+<div class="container-fluid px-0">
 
-         <p class="text-muted">Industry demand generated from job postings</p>
-    </div>
-
-    <!-- JOB INFORMATION -->
-
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h3><%= data.course %></h3>
-
-            <p><%= data.district %> | <%= data.sector %></p>
-
-            <h5>Total Job Postings : <%= totalJobs %></h5>
+    <!-- ===== HEADER ===== -->
+    <div class="page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="mb-1"><i class="bi bi-activity"></i> Live Labour-Market Analysis</h1>
+            <p class="mb-0">Real-time skill demand derived from available job-posting data</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <span class="skill-chip"><i class="bi bi-geo-alt"></i> <%= data.district %></span>
+            <span class="skill-chip"><i class="bi bi-diagram-3"></i> <%= data.sector %></span>
+            <span class="skill-chip"><i class="bi bi-mortarboard"></i> <%= data.course %></span>
         </div>
     </div>
 
-    <!-- INDUSRTY DEMAND FROM JOB POSTING-->
-     <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h3>Industry Skill Demand</h3>
-
-            <div class="row mt-4">
-                <% for(let skill in industryDemand) { %>
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5><%= skill %></h5>
-
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: <%= industryDemand[skill] %>%"><%= industryDemand[skill] %>%</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <% } %>
+    <!-- ===== KPI STRIP ===== -->
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="bi bi-briefcase"></i></div>
+                <div class="stat-label">Total Job Postings</div>
+                <div class="stat-value"><%= totalJobs %></div>
+                <div class="stat-trend text-muted">Analysed in this window</div>
             </div>
         </div>
-     </div>
-
-    <!-- SKILL GAPS FROM CURRICULUM-->
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h3>Detected Skill Gaps</h3>
-
-            <% if(gaps.length == 0) { %>
-                <div class="alert alert-success mt-3">
-                    No skill gaps detected.
-                </div>
-            <%} else {%>
-                <div class="row mt-4">
-                    <% gaps.forEach(gap => { %>
-                        <div class="col-md-4 mb-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5><%= gap.skill %></h5>
-
-                                    <p>Industry Demand : <strong><%= gap.demand %>%</strong></p>
-
-                                    <span class="badge bg-danger"><%= gap.priority %> Priority</span>
-                                </div>
-                            </div>
-                        </div>
-                    <% }) %>
-                </div>
-            <%}%>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon saffron"><i class="bi bi-bar-chart-line"></i></div>
+                <div class="stat-label">Tracked Skills</div>
+                <div class="stat-value"><%= Object.keys(industryDemand).length %></div>
+                <div class="stat-trend text-muted">With measurable demand</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="bi bi-mortarboard"></i></div>
+                <div class="stat-label">Curriculum Skills</div>
+                <div class="stat-value"><%= data.currentCurriculum ? data.currentCurriculum.length : 0 %></div>
+                <div class="stat-trend text-muted">Currently in training</div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+                <div class="stat-icon red"><i class="bi bi-exclamation-triangle"></i></div>
+                <div class="stat-label">Skill Gaps Found</div>
+                <div class="stat-value"><%= gaps.length %></div>
+                <div class="stat-trend text-muted">Missing from curriculum</div>
+            </div>
         </div>
     </div>
+
+    <!-- ===== CHART + HOW IT WORKS ===== -->
+    <div class="row g-4 mb-4">
+
+        <!-- Market Demand by Skill chart -->
+        <div class="col-lg-7">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="dashboard-section-title"><i class="bi bi-graph-up"></i> Market Demand by Skill</div>
+
+                    <% if (Object.keys(industryDemand).length === 0) { %>
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No job-posting data available yet. Add a job posting to see live skill demand.
+                        </div>
+                    <% } else { %>
+                        <div class="chart-container" style="height:300px;">
+                            <canvas id="marketDemandChart"></canvas>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- How this analysis works callout -->
+        <div class="col-lg-5">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="dashboard-section-title"><i class="bi bi-gear"></i> How this analysis works</div>
+                    <p class="text-muted small mb-3">From raw postings to actionable skill gaps.</p>
+
+                    <div class="d-flex flex-column gap-1">
+                        <%
+                        const howItWorks = [
+                            { icon: "bi-briefcase", label: "Job Postings", desc: "Collected from industry" },
+                            { icon: "bi-magic", label: "Skill Extraction", desc: "Key skills identified" },
+                            { icon: "bi-calculator", label: "Demand Calculation", desc: "Percentage per skill" },
+                            { icon: "bi-journal-check", label: "Curriculum Comparison", desc: "Checked against course" },
+                            { icon: "bi-exclamation-triangle", label: "Skill Gap Identification", desc: "Gaps flagged with priority" }
+                        ];
+                        howItWorks.forEach(step => { %>
+                            <div class="d-flex align-items-center gap-3 p-3 rounded mb-1" style="background: var(--si-primary-soft); border: 1px solid var(--si-border);">
+                                <div class="stat-icon blue" style="width:38px;height:38px;font-size:1rem;margin-bottom:0;flex-shrink:0;"><i class="bi <%= step.icon %>"></i></div>
+                                <div>
+                                    <div class="fw-semibold small"><%= step.label %></div>
+                                    <div class="text-muted" style="font-size:0.72rem;"><%= step.desc %></div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- ===== INDUSTRY DEMAND + SKILL GAPS ===== -->
+    <div class="row g-4">
+
+        <!-- Industry Skill Demand -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="dashboard-section-title"><i class="bi bi-bar-chart-line"></i> Industry Skill Demand</div>
+
+                    <% if (Object.keys(industryDemand).length === 0) { %>
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No skill demand data available yet.
+                        </div>
+                    <% } else { %>
+                        <%
+                        const sortedDemand = Object.entries(industryDemand).sort((a, b) => b[1] - a[1]);
+                        sortedDemand.forEach((item, index) => { %>
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <span class="rank-badge"><%= index + 1 %></span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-semibold"><%= item[0] %></span>
+                                        <span class="fw-bold text-primary"><%= item[1] %>%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: <%= item[1] %>%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detected Skill Gaps -->
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="dashboard-section-title"><i class="bi bi-exclamation-triangle"></i> Detected Skill Gaps</div>
+
+                    <% if (gaps.length === 0) { %>
+                        <div class="alert alert-success mb-0">
+                            <i class="bi bi-check-circle me-2"></i>
+                            No skill gaps detected — the curriculum already covers current demand.
+                        </div>
+                    <% } else { %>
+                        <%
+                        gaps.forEach(gap => { %>
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-semibold"><%= gap.skill %></span>
+                                        <span class="fw-bold text-primary"><%= gap.demand %>%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar <% if (gap.priority === "High") { %>bg-danger<% } else if (gap.priority === "Medium") { %>bg-warning<% } else { %>bg-success<% } %>" role="progressbar" style="width: <%= gap.demand %>%"></div>
+                                    </div>
+                                </div>
+                                <% if (gap.priority === "High") { %>
+                                    <span class="priority-pill high"><i class="bi bi-flag-fill"></i> High</span>
+                                <% } else if (gap.priority === "Medium") { %>
+                                    <span class="priority-pill medium"><i class="bi bi-flag"></i> Medium</span>
+                                <% } else { %>
+                                    <span class="priority-pill low"><i class="bi bi-check-circle"></i> Low</span>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
+<!-- ===== CHART SCRIPT ===== -->
+<% if (Object.keys(industryDemand).length > 0) { %>
+<script>
+    (function () {
+        if (typeof Chart === 'undefined') return;
+        var demandData = <%- JSON.stringify(industryDemand) %>;
+        var entries = Object.entries(demandData).sort(function (a, b) { return b[1] - a[1]; });
+        var canvas = document.getElementById('marketDemandChart');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        var gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, '#1e3a8a');
+        gradient.addColorStop(1, '#3b5bdb');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: entries.map(function (e) { return e[0]; }),
+                datasets: [{
+                    label: 'Demand (%)',
+                    data: entries.map(function (e) { return e[1]; }),
+                    backgroundColor: gradient,
+                    borderColor: '#1e3a8a',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    maxBarThickness: 46
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) { return ' Demand: ' + context.parsed.y + '%'; }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(226,232,240,0.6)' },
+                        ticks: { callback: function (value) { return value + '%'; } }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    })();
+</script>
+<% } %>

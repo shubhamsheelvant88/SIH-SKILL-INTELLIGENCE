@@ -1,76 +1,131 @@
 <% layout('layouts/boilerplate') %>
 
+<div class="container-fluid px-0">
 
-
-<div class="container mt-5">
-
-    <div class="text-center mb-5">
-
-        <h1>District-wise Industry Demand</h1>
-
-        <p class="text-muted">
-            Skill demand across different locations
-        </p>
-
+    <!-- ===== HEADER ===== -->
+    <div class="page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="mb-1"><i class="bi bi-geo-alt"></i> District-wise Skill Demand</h1>
+            <p class="mb-0">Understand how skill requirements vary across locations</p>
+        </div>
+        <span class="skill-chip"><i class="bi bi-map"></i> <%= Object.keys(districtDemand).length %> districts</span>
     </div>
 
+    <% if (Object.keys(districtDemand).length === 0) { %>
 
-    <% for (let district in districtDemand) { %>
+        <!-- ===== EMPTY STATE ===== -->
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <div class="stat-icon blue mx-auto mb-3" style="width:64px;height:64px;font-size:1.8rem;"><i class="bi bi-inbox"></i></div>
+                <h5 class="mb-2">No District Data Available</h5>
+                <p class="text-muted mb-4">Add job postings with locations to see district-wise skill demand.</p>
+                <a href="/job-posting" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Add Job Posting</a>
+            </div>
+        </div>
 
-        <div class="card shadow-sm mb-4">
+    <% } else { %>
 
-            <div class="card-body">
+        <!-- ===== DISTRICT CARDS ===== -->
+        <% 
+        const districtEntries = Object.entries(districtDemand);
+        districtEntries.forEach((entry, dIndex) => { 
+            const district = entry[0];
+            const skills = Object.entries(entry[1] || {}).sort((a, b) => b[1] - a[1]);
+        %>
 
-                <h2>
-                    <%= district %>
-                </h2>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                        <div class="dashboard-section-title mb-0"><i class="bi bi-geo-alt"></i> <%= district %></div>
+                        <span class="skill-chip"><i class="bi bi-collection"></i> <%= skills.length %> skills</span>
+                    </div>
 
-                <div class="row mt-4">
-
-                    <% 
-                    const skills = Object.entries(
-                        districtDemand[district]
-                    ).sort((a, b) => b[1] - a[1]);
-                    %>
-
-
-                    <% skills.forEach(skill => { %>
-
-                        <div class="col-md-4 mb-3">
-
-                            <div class="card">
-
-                                <div class="card-body">
-
-                                    <h5>
-                                        <%= skill[0] %>
-                                    </h5>
-
-                                    <div class="progress">
-
-                                        <div
-                                            class="progress-bar"
-                                            style="width: <%= skill[1] %>%"
-                                        >
-                                            <%= skill[1] %>%
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
+                    <% if (skills.length === 0) { %>
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-2"></i>
+                            No skills detected for this district yet.
                         </div>
-
-                    <% }) %>
-
+                    <% } else { %>
+                        <div class="row g-4">
+                            <!-- Chart per district -->
+                            <div class="col-lg-7">
+                                <div class="chart-container" style="height:240px;">
+                                    <canvas id="districtChart<%= dIndex %>"></canvas>
+                                </div>
+                            </div>
+                            <!-- Ranked skills -->
+                            <div class="col-lg-5">
+                                <% skills.forEach((item, index) => { %>
+                                    <div class="d-flex align-items-center gap-3 mb-2">
+                                        <span class="rank-badge"><%= index + 1 %></span>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-semibold small"><%= item[0] %></span>
+                                                <span class="fw-bold text-primary small"><%= item[1] %>%</span>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" style="width: <%= item[1] %>%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                    <% } %>
                 </div>
-
             </div>
 
-        </div>
+        <% }); %>
 
     <% } %>
 
 </div>
+<!-- ===== CHART SCRIPT ===== -->
+<% if (Object.keys(districtDemand).length > 0) { %>
+<script>
+    (function () {
+        if (typeof Chart === 'undefined') return;
+        var districtData = <%- JSON.stringify(districtDemand) %>;
+        var districts = Object.keys(districtData);
+        districts.forEach(function (district, index) {
+            var canvas = document.getElementById('districtChart' + index);
+            if (!canvas) return;
+            var skills = Object.entries(districtData[district] || {}).sort(function (a, b) { return b[1] - a[1]; });
+            if (skills.length === 0) return;
+            new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: skills.map(function (s) { return s[0]; }),
+                    datasets: [{
+                        label: 'Demand (%)',
+                        data: skills.map(function (s) { return s[1]; }),
+                        backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                        borderColor: '#d97706',
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        maxBarThickness: 22
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: function (context) { return ' Demand: ' + context.parsed.x + '%'; } } }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(226,232,240,0.6)' },
+                            ticks: { callback: function (value) { return value + '%'; } }
+                        },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+        });
+    })();
+</script>
+<% } %>
