@@ -25,10 +25,24 @@
 
     <% } else { %>
 
+        <!-- ===== DISTRICT DEMAND COMPARISON CHART ===== -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="dashboard-section-title"><i class="bi bi-bar-chart"></i> District Demand Comparison</div>
+                <p class="text-muted small mb-3">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Highest demand percentage recorded for a single skill in each district. Hover a bar to see the district's top skill and number of skills.
+                </p>
+                <div class="chart-container" style="height:<%= Math.max(260, Object.keys(districtDemand).length * 42) %>px;">
+                    <canvas id="districtComparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- ===== DISTRICT CARDS ===== -->
         <% 
         const districtEntries = Object.entries(districtDemand);
-        districtEntries.forEach((entry, dIndex) => { 
+        districtEntries.forEach((entry) => { 
             const district = entry[0];
             const skills = Object.entries(entry[1] || {}).sort((a, b) => b[1] - a[1]);
         %>
@@ -47,14 +61,8 @@
                         </div>
                     <% } else { %>
                         <div class="row g-4">
-                            <!-- Chart per district -->
-                            <div class="col-lg-7">
-                                <div class="chart-container" style="height:240px;">
-                                    <canvas id="districtChart<%= dIndex %>"></canvas>
-                                </div>
-                            </div>
                             <!-- Ranked skills -->
-                            <div class="col-lg-5">
+                            <div class="col-12">
                                 <% skills.forEach((item, index) => { %>
                                     <div class="d-flex align-items-center gap-3 mb-2">
                                         <span class="rank-badge"><%= index + 1 %></span>
@@ -80,30 +88,73 @@
     <% } %>
 
 </div>
-<!-- ===== CHART SCRIPT ===== -->
+<!-- ===== CHART SCRIPT (district-level comparison from existing districtDemand data) ===== -->
 <% if (Object.keys(districtDemand).length > 0) { %>
 <script>
     (function () {
-        if (typeof Chart === 'undefined') return;
-        var districtData = <%- JSON.stringify(districtDemand) %>;
-        var districts = Object.keys(districtData);
-        districts.forEach(function (district, index) {
-            var canvas = document.getElementById('districtChart' + index);
-            if (!canvas) return;
-            var skills = Object.entries(districtData[district] || {}).sort(function (a, b) { return b[1] - a[1]; });
-            if (skills.length === 0) return;
+        function renderChart() {
+            if (typeof Chart === 'undefined') return;
+
+            var districtData = <%- JSON.stringify(districtDemand) %>;
+            var canvas = document.getElementById('districtComparisonChart');
+            var districts = Object.keys(districtData || {});
+            if (!canvas || districts.length === 0) return;
+
+            // Avoid duplicate chart instances if the page is re-rendered.
+            var existing = Chart.getChart(canvas);
+            if (existing) existing.destroy();
+
+            // Build a district-level comparison: for each district use its top
+            // skill demand % (the strongest demand signal), derived from the
+            // existing data — no invented values.
+            var rows = districts.map(function (district) {
+                var skills = Object.entries(districtData[district] || {}).sort(function (a, b) { return b[1] - a[1]; });
+                return {
+                    district: district,
+                    topSkill: skills.length > 0 ? skills[0][0] : null,
+                    topValue: skills.length > 0 ? skills[0][1] : 0,
+                    skillCount: skills.length
+                };
+            }).sort(function (a, b) { return b.topValue - a.topValue; });
+
+            var labels = rows.map(function (r) { return r.district; });
+            var values = rows.map(function (r) { return r.topValue; });
+
+            // Inline plugin that draws the percentage value at the end of each bar.
+            var valueLabels = {
+                id: 'districtValueLabels',
+                afterDatasetsDraw: function (chart) {
+                    var ctx = chart.ctx;
+                    chart.data.datasets.forEach(function (dataset, dsIndex) {
+                        var meta = chart.getDatasetMeta(dsIndex);
+                        if (meta.hidden) return;
+                        meta.data.forEach(function (bar, i) {
+                            var value = dataset.data[i];
+                            if (value === null || value === undefined) return;
+                            ctx.save();
+                            ctx.font = '600 11px Inter, system-ui, sans-serif';
+                            ctx.fillStyle = '#b45309';
+                            ctx.textAlign = 'left';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(value + '%', bar.x + 6, bar.y);
+                            ctx.restore();
+                        });
+                    });
+                }
+            };
+
             new Chart(canvas, {
                 type: 'bar',
                 data: {
-                    labels: skills.map(function (s) { return s[0]; }),
+                    labels: labels,
                     datasets: [{
-                        label: 'Demand (%)',
-                        data: skills.map(function (s) { return s[1]; }),
+                        label: 'Top skill demand (%)',
+                        data: values,
                         backgroundColor: 'rgba(245, 158, 11, 0.8)',
                         borderColor: '#d97706',
                         borderWidth: 1,
                         borderRadius: 6,
-                        maxBarThickness: 22
+                        maxBarThickness: 26
                     }]
                 },
                 options: {
@@ -111,21 +162,49 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
+                        title: {
+                            display: true,
+                            text: 'Top Skill Demand by District',
+                            color: '#1e3a8a',
+                            font: { size: 15, weight: '700' }
+                        },
                         legend: { display: false },
-                        tooltip: { callbacks: { label: function (context) { return ' Demand: ' + context.parsed.x + '%'; } } }
+                        tooltip: {
+                            callbacks: {
+                                title: function (items) {
+                                    return items.length ? items[0].label : '';
+                                },
+                                label: function (context) {
+                                    var row = rows[context.dataIndex];
+                                    return [
+                                        ' Peak demand: ' + context.parsed.x + '%',
+                                        (row.topSkill ? ' Top skill: ' + row.topSkill : ''),
+                                        ' ' + row.skillCount + ' skill(s)'
+                                    ];
+                                }
+                            }
+                        }
                     },
                     scales: {
                         x: {
                             beginAtZero: true,
                             max: 100,
-                            grid: { color: 'rgba(226,232,240,0.6)' },
+                            title: { display: true, text: 'Demand (%)', color: '#475569' },
+                            grid: { color: 'rgba(226, 232, 240, 0.6)' },
                             ticks: { callback: function (value) { return value + '%'; } }
                         },
-                        y: { grid: { display: false } }
+                        y: { grid: { display: false }, ticks: { font: { size: 12 } } }
                     }
-                }
+                },
+                plugins: [valueLabels]
             });
-        });
+        }
+
+        if (document.readyState === 'loading') {
+            window.addEventListener('load', renderChart);
+        } else {
+            renderChart();
+        }
     })();
 </script>
 <% } %>
