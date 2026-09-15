@@ -1,57 +1,168 @@
 <% layout('layouts/boilerplate') %>
 
-<div class="cotainer mt-5">
-    <div class="text-center mb-5">
-        <h1>Skill Gap Analysis</h1>
+<div class="container-fluid px-0">
 
-         <p class="text-muted">Comparing industry requirements with the current curriculum.</p>
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">
+                <i class="bi bi-exclamation-triangle text-warning me-2"></i>Skill Gap Analysis
+            </h1>
+            <p class="text-muted mb-0">
+                Comparing current competencies against real-time industry demand derived from the skill gap questionnaire.
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <a href="/analyze-skill-gaps" class="btn btn-outline-primary d-inline-flex align-items-center gap-2">
+                <i class="bi bi-arrow-repeat"></i>
+                <span>Retake / Choose Another Role</span>
+            </a>
+            <a href="/recommendations" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                <i class="bi bi-journal-check"></i>
+                <span>View Recommendations</span>
+            </a>
+        </div>
     </div>
 
-    <% results.forEach(result => { %>
-        <div class="card shadow-sm mb-5">
-            <div class="card-body">
-                <h3><%= result.data.course %></h3>
+    <% if (!results || results.length === 0) { %>
+        <!-- Empty State: When no questionnaire has been taken -->
+        <div class="card border-0 shadow-sm text-center p-5 my-4">
+            <div class="card-body py-5">
+                <div class="stat-icon saffron mx-auto mb-3" style="width: 64px; height: 64px; font-size: 1.8rem;">
+                    <i class="bi bi-clipboard-pulse"></i>
+                </div>
+                <h3 class="fw-bold mb-2">No Skill Gap Questionnaire Analysis Found</h3>
+                <p class="text-muted mx-auto mb-4" style="max-width: 550px;">
+                    Take our 2-minute, 10-question industry assessment for your target job role to identify your missing skills and generate customized curriculum recommendations.
+                </p>
+                <a href="/analyze-skill-gaps" class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow-sm">
+                    <i class="bi bi-magic me-2"></i>Analyze Skill Gaps Now
+                </a>
+            </div>
+        </div>
+    <% } else { %>
 
-                <p><%= result.data.district %> | <%= result.data.sector %></p>
+        <% results.forEach(result => { %>
+            <% 
+                const totalEvaluated = result.data.industryDemand ? Object.keys(result.data.industryDemand).length : 10;
+                const gapsCount = result.gaps.length;
+                const possessedCount = Array.isArray(result.data.currentCurriculum) ? result.data.currentCurriculum.length : (totalEvaluated - gapsCount);
+                const readinessScore = Math.round((possessedCount / totalEvaluated) * 100);
+            %>
 
-                <h4 class="mt-4 mb-3">Missing Skills</h4>
+            <div class="card shadow-sm border-0 mb-5 overflow-hidden">
+                <!-- Role Header Banner -->
+                <div class="card-header bg-white border-bottom p-4">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1">
+                                    <i class="bi bi-check2-circle me-1"></i> Questionnaire Analysis
+                                </span>
+                                <span class="badge bg-secondary-subtle text-secondary border px-3 py-1">
+                                    <%= result.data.sector %>
+                                </span>
+                            </div>
+                            <h2 class="fw-bold mb-1"><%= result.data.course %></h2>
+                            <p class="text-muted mb-0 small">
+                                <i class="bi bi-geo-alt me-1"></i>Benchmark: <%= result.data.district %>
+                            </p>
+                        </div>
+                        <div class="d-flex gap-3 text-center">
+                            <div class="bg-light p-3 rounded-3 border">
+                                <div class="fs-4 fw-bold text-success"><%= possessedCount %> / <%= totalEvaluated %></div>
+                                <div class="text-muted small">Skills Possessed</div>
+                            </div>
+                            <div class="bg-light p-3 rounded-3 border">
+                                <div class="fs-4 fw-bold text-danger"><%= gapsCount %></div>
+                                <div class="text-muted small">Missing Gaps</div>
+                            </div>
+                            <div class="bg-light p-3 rounded-3 border">
+                                <div class="fs-4 fw-bold text-primary"><%= readinessScore %>%</div>
+                                <div class="text-muted small">Market Readiness</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+                        <h4 class="mb-0 fw-bold">
+                            <i class="bi bi-exclamation-circle text-danger me-2"></i>Identified Missing Skills (Skill Gaps)
+                        </h4>
+                        <span class="text-muted small">
+                            Skills you answered "No" to during your assessment
+                        </span>
+                    </div>
 
-                <% if(result.gaps.length == 0) { %>
-                    <div class="alert alert-success"> No major skill gaps detected.</div>
-                <% } else {%>
-                    <div class="row">
-                        <% result.gaps.forEach(gap => { %>
-                            <div class="col-md-6 mb-3">
-                                <div class="card border">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between">
-                                            <h5><%= gap.skill %></h5>
+                    <% if (result.gaps.length === 0) { %>
+                        <div class="alert alert-success d-flex align-items-center p-4 rounded-3 shadow-sm border-0 mb-4" role="alert">
+                            <i class="bi bi-check-circle-fill fs-2 me-3 text-success"></i>
+                            <div>
+                                <h5 class="alert-heading fw-bold mb-1">Excellent! No Major Skill Gaps Detected</h5>
+                                <p class="mb-0">
+                                    You indicated possessing all 10 high-demand skills evaluated for <strong><%= result.data.course %></strong>. Your competencies align directly with current industry requirements!
+                                </p>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <div class="row g-3 mb-4">
+                            <% result.gaps.forEach(gap => { %>
+                                <div class="col-md-6 col-lg-6">
+                                    <div class="card border rounded-3 h-100 shadow-sm p-3">
+                                        <div class="card-body p-2">
+                                            <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                                <h5 class="fw-bold text-dark mb-0"><%= gap.skill %></h5>
+                                                <% if (gap.priority === "High") { %>
+                                                    <span class="badge bg-danger">High Priority Gap</span>
+                                                <% } else if (gap.priority === "Medium") { %>
+                                                    <span class="badge bg-warning text-dark">Medium Priority</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-secondary">Low Priority</span>
+                                                <% } %>
+                                            </div>
 
-                                            <% if(gap.priority === "High") { %>
-                                                <span class="badge bg-danger">High</span>
-                                            <% } else if(gap.priority === "Medium"){ %>
-                                                <span class="badge bg-warning text-dark">Medium</span>
-                                            <% } else { %>
-                                                <span class="badge bg-secondary">Low</span>
-                                            <% } %>
-                                        </div>
+                                            <div class="d-flex justify-content-between align-items-center mt-3 mb-1">
+                                                <span class="text-muted small fw-semibold">Industry Hiring Demand:</span>
+                                                <strong class="text-dark"><%= gap.demand %>%</strong>
+                                            </div>
 
-                                        <p class="mt-3 mb-2">Industry Demand : <strong> <%= gap.demand %>%</strong></p>
-
-                                        <div class="progress">
-
-                                            <div class="progress-bar" role="progressbar" style="width: <%= gap.demand %>%">
-                                                <%= gap.demand %>%
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar <%= gap.priority === 'High' ? 'bg-danger' : (gap.priority === 'Medium' ? 'bg-warning' : 'bg-secondary') %>" 
+                                                     role="progressbar" 
+                                                     style="width: <%= gap.demand %>%" 
+                                                     aria-valuenow="<%= gap.demand %>" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            <% }); %>
+                        </div>
+                    <% } %>
+
+                    <!-- Possessed Skills Summary -->
+                    <% if (Array.isArray(result.data.currentCurriculum) && result.data.currentCurriculum.length > 0) { %>
+                        <div class="mt-4 pt-4 border-top">
+                            <h6 class="fw-bold text-dark mb-3">
+                                <i class="bi bi-check2-all text-success me-2"></i>Skills You Confirmed Having (Current Strengths):
+                            </h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                <% result.data.currentCurriculum.forEach(skill => { %>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6 fw-normal">
+                                        <i class="bi bi-check-circle me-1"></i> <%= skill %>
+                                    </span>
+                                <% }); %>
                             </div>
-                        <% }) %>
-                    </div>
-                <% } %>
+                        </div>
+                    <% } %>
+
+                </div>
             </div>
-        </div>
-    <% }) %>
+        <% }); %>
+
+    <% } %>
+
 </div>

@@ -1,0 +1,156 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container-fluid px-0">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="mb-1">
+                <i class="bi bi-bullseye text-primary me-2"></i>Analyze Skill Gaps
+            </h1>
+            <p class="text-muted mb-0">
+                Identify your real-world skill gaps against current industry hiring demands and generate actionable curriculum recommendations.
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="skill-chip"><i class="bi bi-layers"></i> 2-Step Evaluation</span>
+            <span class="skill-chip"><i class="bi bi-list-check"></i> 10 Industry Skills</span>
+            <span class="skill-chip"><i class="bi bi-arrow-repeat"></i> Live Sync to Reports</span>
+        </div>
+    </div>
+
+    <!-- ===== STEP 1: CHOOSE TARGET JOB ROLE ===== -->
+    <div class="row justify-content-center">
+        <div class="col-xl-9 col-lg-10 col-12">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom p-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon blue" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-1 fw-bold">Step 1: Select Your Target Job Role</h4>
+                            <p class="text-muted small mb-0">
+                                Choose from 5 benchmark roles aligned with our oversupplied courses and industry demand database.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form action="/analyze-skill-gaps/assessment" method="GET" id="roleSelectionForm">
+
+                        <!-- Role Dropdown -->
+                        <div class="mb-4">
+                            <label for="roleDropdown" class="form-label fw-bold text-dark fs-5 mb-2">
+                                <i class="bi bi-briefcase me-2 text-primary"></i>Targeted Job Role / Career Track:
+                            </label>
+                            <select id="roleDropdown" name="roleId" class="form-select form-select-lg border-primary-subtle shadow-sm py-3" style="font-size: 1.05rem;" required>
+                                <% roles.forEach((r, idx) => { %>
+                                    <option value="<%= r.id %>" <%= (selectedRole && selectedRole.id === r.id) || idx === 0 ? 'selected' : '' %>>
+                                        <%= r.title %> — [<%= r.degree %>]
+                                    </option>
+                                <% }); %>
+                            </select>
+                            <div class="form-text mt-2 text-muted">
+                                <i class="bi bi-info-circle me-1"></i> Listed 5 roles match industry tracks analyzed in the Oversupplied Courses intelligence index.
+                            </div>
+                        </div>
+
+                        <!-- Interactive Role Details Preview Card -->
+                        <div class="card bg-light border-0 rounded-3 mb-4 p-3 p-md-4" id="roleDetailsPreview">
+                            <% roles.forEach((r, idx) => { %>
+                                <div class="role-preview-item" id="preview-<%= r.id %>" style="<%= idx === 0 ? 'display: block;' : 'display: none;' %>">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge bg-primary px-3 py-2"><i class="bi <%= r.icon %> me-1"></i> <%= r.title %></span>
+                                            <span class="badge bg-secondary-subtle text-secondary border px-3 py-2"><%= r.degree %></span>
+                                        </div>
+                                        <span class="text-muted small"><i class="bi bi-check2-circle text-success me-1"></i> 10 Industry-Curated Questions</span>
+                                    </div>
+                                    <p class="text-muted mb-0 mt-3" style="line-height: 1.6;">
+                                        <strong class="text-dark">Role Focus:</strong> <%= r.summary %>
+                                    </p>
+                                </div>
+                            <% }); %>
+                        </div>
+
+                        <!-- Proceed Button -->
+                        <div class="text-center pt-2">
+                            <button type="submit" class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow-sm d-inline-flex align-items-center gap-2" id="proceedBtn">
+                                <span>Proceed to analyze gaps</span>
+                                <i class="bi bi-arrow-right fs-5"></i>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- Workflow Highlights / Instructions -->
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 p-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon saffron" style="width: 40px; height: 40px; font-size: 1.1rem;">
+                                <i class="bi bi-1-circle"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">1. Select Job Role</h6>
+                                <p class="text-muted small mb-0">Choose your targeted profession from the curated dropdown.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 p-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon blue" style="width: 40px; height: 40px; font-size: 1.1rem;">
+                                <i class="bi bi-2-circle"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">2. Answer 10 Questions</h6>
+                                <p class="text-muted small mb-0">Respond Yes/No to high-demand skills employers expect right now.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 p-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon green" style="width: 40px; height: 40px; font-size: 1.1rem;">
+                                <i class="bi bi-3-circle"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">3. Live Analysis Update</h6>
+                                <p class="text-muted small mb-0">Skill Gap and Recommendations pages sync immediately to your answers.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var dropdown = document.getElementById("roleDropdown");
+        var previewItems = document.querySelectorAll(".role-preview-item");
+
+        dropdown.addEventListener("change", function() {
+            var selectedId = this.value;
+            previewItems.forEach(function(item) {
+                if (item.id === "preview-" + selectedId) {
+                    item.style.display = "block";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        });
+    });
+</script>

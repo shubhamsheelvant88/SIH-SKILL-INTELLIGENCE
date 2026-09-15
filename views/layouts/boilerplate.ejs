@@ -48,6 +48,7 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title">Skill & Curriculum</div>
+                    <a href="/analyze-skill-gaps" class="sidebar-link"><i class="bi bi-magic"></i><span>Analyze Skill Gaps</span></a>
                     <a href="/skill-gap" class="sidebar-link"><i class="bi bi-exclamation-triangle"></i><span>Skill Gap</span></a>
                     <a href="/recommendations" class="sidebar-link"><i class="bi bi-journal-check"></i><span>Recommendations</span></a>
                     <a href="/validated-gap" class="sidebar-link"><i class="bi bi-patch-check"></i><span>Validated Gaps</span></a>
@@ -96,10 +97,10 @@
                 </div>
             </div>
             <div class="topbar-right">
-                <span class="sih-badge">
-                    <i class="bi bi-award"></i>
-                    <span>SIH 2026</span>
-                </span>
+                <a href="/analyze-skill-gaps" class="btn btn-primary d-inline-flex align-items-center gap-2 fw-semibold shadow-sm text-decoration-none px-3 py-2">
+                    <i class="bi bi-magic"></i>
+                    <span>Analyze skill gaps</span>
+                </a>
             </div>
         </header>
 
@@ -137,7 +138,7 @@
 
             links.forEach(function (link) {
                 var href = link.getAttribute('href');
-                if (href && href === path) {
+                if (href && (href === path || (path.startsWith('/analyze-skill-gaps') && href === '/analyze-skill-gaps'))) {
                     link.classList.add('active');
                     link.setAttribute('aria-current', 'page');
                     activeFound = true;
