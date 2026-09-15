@@ -37,6 +37,33 @@
 
     <% } else { %>
 
+        <!-- ===== PLACEMENT EFFECTIVENESS CHART ===== -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <h5>
+                    Skill &rarr; Industry Demand
+                </h5>
+
+                <p class="text-muted">
+                    How strongly each analysed skill gap is demanded by industry,
+                    colour-coded by placement validation status.
+                </p>
+
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Effective</span>
+                    <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle"></i> Needs Validation</span>
+                </div>
+
+                <div class="chart-container" style="height:<%= Math.max(320, analysis.length * 34) %>px;">
+                    <canvas id="placementChart"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
 
         <div class="row">
 
@@ -103,6 +130,114 @@
 
         </div>
 
+        <!-- ===== PLACEMENT EFFECTIVENESS CHART SCRIPT (uses existing analysis data) ===== -->
+        <script>
+            (function () {
+                function renderChart() {
+                    if (typeof Chart === 'undefined') return;
+
+                    var analysisData = <%- JSON.stringify(analysis) %>;
+                    var canvas = document.getElementById('placementChart');
+                    if (!canvas || !Array.isArray(analysisData) || analysisData.length === 0) return;
+
+                    // Avoid duplicate chart instances if the page is re-rendered.
+                    var existing = Chart.getChart(canvas);
+                    if (existing) existing.destroy();
+
+                    var labels = analysisData.map(function (item) { return item.skill; });
+                    var values = analysisData.map(function (item) { return item.demand; });
+                    var colors = analysisData.map(function (item) {
+                        return item.status === 'Effective'
+                            ? 'rgba(22, 163, 74, 0.8)'
+                            : 'rgba(245, 158, 11, 0.85)';
+                    });
+                    var borderColors = analysisData.map(function (item) {
+                        return item.status === 'Effective' ? '#15803d' : '#d97706';
+                    });
+
+                    // Inline plugin that draws the percentage value at the end of each bar.
+                    var valueLabels = {
+                        id: 'placementValueLabels',
+                        afterDatasetsDraw: function (chart) {
+                            var ctx = chart.ctx;
+                            chart.data.datasets.forEach(function (dataset, dsIndex) {
+                                var meta = chart.getDatasetMeta(dsIndex);
+                                if (meta.hidden) return;
+                                meta.data.forEach(function (bar, i) {
+                                    var value = dataset.data[i];
+                                    if (value === null || value === undefined) return;
+                                    ctx.save();
+                                    ctx.font = '600 11px Inter, system-ui, sans-serif';
+                                    ctx.fillStyle = '#334155';
+                                    ctx.textAlign = 'left';
+                                    ctx.textBaseline = 'middle';
+                                    ctx.fillText(value + '%', bar.x + 6, bar.y);
+                                    ctx.restore();
+                                });
+                            });
+                        }
+                    };
+
+                    new Chart(canvas, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Industry Demand (%)',
+                                data: values,
+                                backgroundColor: colors,
+                                borderColor: borderColors,
+                                borderWidth: 1,
+                                borderRadius: 6,
+                                maxBarThickness: 26
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Skill \u2192 Industry Demand (%)',
+                                    color: '#1e3a8a',
+                                    font: { size: 15, weight: '700' }
+                                },
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            var item = analysisData[context.dataIndex];
+                                            return [
+                                                ' Demand: ' + context.parsed.x + '%',
+                                                ' Status: ' + (item.status || 'Needs Validation')
+                                            ];
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    title: { display: true, text: 'Industry Demand (%)', color: '#475569' },
+                                    grid: { color: 'rgba(226, 232, 240, 0.6)' },
+                                    ticks: { callback: function (value) { return value + '%'; } }
+                                },
+                                y: { grid: { display: false }, ticks: { font: { size: 12 } } }
+                            }
+                        },
+                        plugins: [valueLabels]
+                    });
+                }
+
+                if (document.readyState === 'loading') {
+                    window.addEventListener('load', renderChart);
+                } else {
+                    renderChart();
+                }
+            })();
+        </script>
 
     <% } %>
 

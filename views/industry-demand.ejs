@@ -104,48 +104,106 @@
     <% } %>
 
 </div>
-<!-- ===== CHART SCRIPT ===== -->
+<!-- ===== CHART SCRIPT (uses existing industryDemand data) ===== -->
 <% if (Object.keys(industryDemand).length > 0) { %>
 <script>
     (function () {
-        if (typeof Chart === 'undefined') return;
-        var demandData = <%- JSON.stringify(industryDemand) %>;
-        var entries = Object.entries(demandData).sort(function (a, b) { return a[1] - b[1]; });
-        var canvas = document.getElementById('industryDemandChart');
-        if (!canvas) return;
-        new Chart(canvas, {
-            type: 'bar',
-            data: {
-                labels: entries.map(function (e) { return e[0]; }),
-                datasets: [{
-                    label: 'Demand (%)',
-                    data: entries.map(function (e) { return e[1]; }),
-                    backgroundColor: 'rgba(30, 58, 138, 0.75)',
-                    borderColor: '#1e3a8a',
-                    borderWidth: 1,
-                    borderRadius: 6,
-                    maxBarThickness: 20
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { callbacks: { label: function (context) { return ' Demand: ' + context.parsed.x + '%'; } } }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        max: 100,
-                        grid: { color: 'rgba(226,232,240,0.6)' },
-                        ticks: { callback: function (value) { return value + '%'; } }
-                    },
-                    y: { grid: { display: false } }
+        function renderChart() {
+            if (typeof Chart === 'undefined') return;
+
+            var demandData = <%- JSON.stringify(industryDemand) %>;
+            var entries = Object.entries(demandData).sort(function (a, b) { return a[1] - b[1]; });
+            var canvas = document.getElementById('industryDemandChart');
+            if (!canvas || entries.length === 0) return;
+
+            // Avoid duplicate chart instances if the page is re-rendered.
+            var existing = Chart.getChart(canvas);
+            if (existing) existing.destroy();
+
+            // Inline plugin that draws the percentage value clearly above each bar.
+            var valueLabels = {
+                id: 'industryValueLabels',
+                afterDatasetsDraw: function (chart) {
+                    var ctx = chart.ctx;
+                    chart.data.datasets.forEach(function (dataset, dsIndex) {
+                        var meta = chart.getDatasetMeta(dsIndex);
+                        if (meta.hidden) return;
+                        meta.data.forEach(function (bar, i) {
+                            var value = dataset.data[i];
+                            if (value === null || value === undefined) return;
+                            ctx.save();
+                            ctx.font = '600 11px Inter, system-ui, sans-serif';
+                            ctx.fillStyle = '#1e3a8a';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'bottom';
+                            ctx.fillText(value + '%', bar.x + bar.width / 2, bar.y - 3);
+                            ctx.restore();
+                        });
+                    });
                 }
-            }
-        });
+            };
+
+            new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: entries.map(function (e) { return e[0]; }),
+                    datasets: [{
+                        label: 'Demand (%)',
+                        data: entries.map(function (e) { return e[1]; }),
+                        backgroundColor: 'rgba(30, 58, 138, 0.75)',
+                        borderColor: '#1e3a8a',
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        maxBarThickness: 46
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Industry Skill Demand',
+                            color: '#1e3a8a',
+                            font: { size: 15, weight: '700' }
+                        },
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return ' Demand: ' + context.parsed.y + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 45,
+                                minRotation: 0,
+                                font: { size: 11 }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Demand (%)', color: '#475569' },
+                            grid: { color: 'rgba(226, 232, 240, 0.6)' },
+                            ticks: { callback: function (value) { return value + '%'; } }
+                        }
+                    }
+                },
+                plugins: [valueLabels]
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            window.addEventListener('load', renderChart);
+        } else {
+            renderChart();
+        }
     })();
 </script>
 <% } %>
