@@ -1,0 +1,205 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container-fluid px-0">
+
+    <!-- ===== PAGE HEADER & BREADCRUMB ===== -->
+    <div class="page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <a href="/analyze-skill-gaps" class="text-decoration-none text-muted small">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Role Selection
+                </a>
+                <span class="text-muted small">•</span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle small">
+                    Step 2: 10-Skill Assessment
+                </span>
+            </div>
+            <h1 class="mb-1">
+                <i class="bi <%= role.icon %> text-primary me-2"></i><%= role.title %>
+            </h1>
+            <p class="text-muted mb-0">
+                Answer the 10 questions below to evaluate your proficiency against current industry hiring demands.
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="skill-chip"><i class="bi bi-mortarboard"></i> <%= role.degree %></span>
+            <span class="skill-chip"><i class="bi bi-tag"></i> <%= role.sector %></span>
+        </div>
+    </div>
+
+    <!-- ===== ROLE BRIEFING & PROGRESS BAR ===== -->
+    <div class="card border-0 shadow-sm mb-4" style="border-left: 5px solid var(--si-primary) !important;">
+        <div class="card-body p-4">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-8">
+                    <h5 class="fw-bold mb-1">Industry Competency Questionnaire</h5>
+                    <p class="text-muted small mb-0">
+                        <%= role.summary %>
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <div class="d-inline-block text-start bg-light p-3 rounded-3 border">
+                        <div class="d-flex align-items-center justify-content-between gap-3 mb-1">
+                            <span class="small fw-bold text-dark">Completion:</span>
+                            <span class="small fw-bold text-primary" id="progressCount">0 / 10 Answered</span>
+                        </div>
+                        <div class="progress" style="height: 8px; width: 180px;">
+                            <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" id="progressBar" role="progressbar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 10 QUESTIONS FORM ===== -->
+    <form action="/analyze-skill-gaps/submit" method="POST" id="skillAssessmentForm">
+        <input type="hidden" name="roleId" value="<%= role.id %>">
+        <input type="hidden" name="totalQuestions" value="<%= role.questions.length %>">
+
+        <div class="row g-4">
+            <% role.questions.forEach((q, idx) => { %>
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm question-card" id="card-q<%= idx %>" style="transition: all 0.2s ease;">
+                        <div class="card-body p-4">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-dark text-white rounded-pill px-3 py-1">
+                                        Question <%= idx + 1 %> of 10
+                                    </span>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-semibold">
+                                        <%= q.skill %>
+                                    </span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-1">
+                                        <i class="bi bi-fire me-1"></i> <%= q.demand %>% Current Industry Demand
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Question Text -->
+                            <h5 class="fw-semibold text-dark mb-3" style="line-height: 1.5;">
+                                <%= q.question %>
+                            </h5>
+
+                            <!-- Hidden Question Data -->
+                            <input type="hidden" name="skills[<%= idx %>][name]" value="<%= q.skill %>">
+                            <input type="hidden" name="skills[<%= idx %>][demand]" value="<%= q.demand %>">
+                            <input type="hidden" name="skills[<%= idx %>][recommendation]" value="<%= q.recommendation %>">
+
+                            <!-- Yes / No Options -->
+                            <div class="pt-2">
+                                <div class="d-flex flex-wrap gap-3 align-items-center">
+                                    <span class="text-muted small fw-semibold me-2">Do you have this skill?</span>
+
+                                    <!-- Option: YES -->
+                                    <input type="radio" 
+                                           class="btn-check answer-radio" 
+                                           name="skills[<%= idx %>][answer]" 
+                                           id="q<%= idx %>_yes" 
+                                           value="yes" 
+                                           data-q-idx="<%= idx %>" 
+                                           required>
+                                    <label class="btn btn-outline-success px-4 py-2 rounded-pill fw-semibold d-inline-flex align-items-center gap-2 answer-label" for="q<%= idx %>_yes">
+                                        <i class="bi bi-check-circle"></i>
+                                        <span>Yes, I have this skill</span>
+                                    </label>
+
+                                    <!-- Option: NO -->
+                                    <input type="radio" 
+                                           class="btn-check answer-radio" 
+                                           name="skills[<%= idx %>][answer]" 
+                                           id="q<%= idx %>_no" 
+                                           value="no" 
+                                           data-q-idx="<%= idx %>" 
+                                           required>
+                                    <label class="btn btn-outline-danger px-4 py-2 rounded-pill fw-semibold d-inline-flex align-items-center gap-2 answer-label" for="q<%= idx %>_no">
+                                        <i class="bi bi-x-circle"></i>
+                                        <span>No, I need to learn this</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+        <!-- Submit Bar Card -->
+        <div class="card border-0 shadow-sm mt-4 mb-5 sticky-bottom bg-white p-4">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Ready to Generate Your Analysis?</h5>
+                    <p class="text-muted small mb-0">
+                        Submitting will update your Skill Gap & Recommendations reports based solely on your questionnaire responses.
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="/analyze-skill-gaps" class="btn btn-outline-secondary px-4 py-2">
+                        Change Role
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow-sm d-inline-flex align-items-center gap-2" id="submitAssessmentBtn">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        <span>Submit Skill Gap Analysis</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var totalQuestions = <%= role.questions.length %>;
+        var radios = document.querySelectorAll(".answer-radio");
+        var progressCount = document.getElementById("progressCount");
+        var progressBar = document.getElementById("progressBar");
+
+        function updateProgress() {
+            var answeredIndices = new Set();
+            radios.forEach(function(radio) {
+                if (radio.checked) {
+                    var qIdx = radio.getAttribute("data-q-idx");
+                    answeredIndices.add(qIdx);
+
+                    // Style the card indicating it has been answered
+                    var card = document.getElementById("card-q" + qIdx);
+                    if (card) {
+                        card.style.borderLeft = (radio.value === "yes") 
+                            ? "4px solid #10b981" 
+                            : "4px solid #ef4444";
+                    }
+                }
+            });
+
+            var count = answeredIndices.size;
+            var percent = Math.round((count / totalQuestions) * 100);
+            progressCount.textContent = count + " / " + totalQuestions + " Answered";
+            progressBar.style.width = percent + "%";
+        }
+
+        radios.forEach(function(radio) {
+            radio.addEventListener("change", updateProgress);
+        });
+
+        // Form submission confirmation / check
+        var form = document.getElementById("skillAssessmentForm");
+        form.addEventListener("submit", function(e) {
+            var answeredIndices = new Set();
+            radios.forEach(function(radio) {
+                if (radio.checked) {
+                    answeredIndices.add(radio.getAttribute("data-q-idx"));
+                }
+            });
+
+            if (answeredIndices.size < totalQuestions) {
+                e.preventDefault();
+                alert("Please answer all 10 questions before submitting your analysis (" + answeredIndices.size + "/" + totalQuestions + " answered).");
+            }
+        });
+    });
+</script>

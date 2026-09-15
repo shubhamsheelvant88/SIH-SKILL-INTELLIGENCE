@@ -9,6 +9,7 @@ const EmployerFeedback = require("./models/EmployerFeedback");
 const JobPosting = require("./models/jobPosting");
 const PlacementOutcome = require("./models/placementOutcome");
 const oversuppliedCoursesData = require("./data/oversuppliedCourses");
+const skillQuestionsData = require("./data/skillQuestionsData");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -20,25 +21,22 @@ app.use(express.static("public"));
 
 const MONGO_URL = process.env.MONGO_URI;
 
+const defaultRole = skillQuestionsData["full-stack-developer"];
+const defaultDemand = {};
+defaultRole.questions.forEach(q => {
+  defaultDemand[q.skill] = q.demand;
+});
+
 const defaultCurriculum = {
-  district: "Bengaluru",
-  sector: "IT",
-  course: "Full Stack Development",
-  industryDemand: {
-    JavaScript: 85,
-    React: 72,
-    "Node.js": 68,
-    MongoDB: 51,
-    AWS: 45,
-    Docker: 38,
-    TypeScript: 34
-  },
+  district: "National / Industry Benchmark",
+  sector: defaultRole.sector,
+  course: defaultRole.title,
+  industryDemand: defaultDemand,
   currentCurriculum: [
-    "HTML",
-    "CSS",
-    "JavaScript",
-    "Node.js",
-    "MongoDB"
+    defaultRole.questions[0].skill,
+    defaultRole.questions[1].skill,
+    defaultRole.questions[2].skill,
+    defaultRole.questions[3].skill
   ]
 };
 
@@ -97,24 +95,37 @@ function calculateSkillGaps(industryDemand, currentCurriculum) {
 
 function generateRecommendations(gaps) {
   let recommendations = gaps.map(gap => {
+    let recommendation = gap.recommendation;
 
-    let recommendation;
+    if (!recommendation) {
+      for (const role of Object.values(skillQuestionsData)) {
+        const matchedQ = role.questions.find(
+          q => q.skill.toLowerCase() === (gap.skill || "").toLowerCase()
+        );
+        if (matchedQ) {
+          recommendation = matchedQ.recommendation;
+          break;
+        }
+      }
+    }
 
-    if(gap.skill === "React") {
-      recommendation =  "Add React fundamentals, components, hooks and project-based development.";
-    } else if(gap.skill === "AWS") {
-      recommendation = "Add cloud computing fundamentals and AWS deployment modules.";
-    } else if(gap.skill === "Docker") {
-      recommendation = "Add containerization, Docker commands and deployment practices.";
-    } else {
-      recommendation = `Consider adding ${gap.skill} to the curriculum.`;
+    if (!recommendation) {
+      if (gap.skill === "React") {
+        recommendation = "Add React fundamentals, components, hooks and project-based development.";
+      } else if (gap.skill === "AWS") {
+        recommendation = "Add cloud computing fundamentals and AWS deployment modules.";
+      } else if (gap.skill === "Docker") {
+        recommendation = "Add containerization, Docker commands and deployment practices.";
+      } else {
+        recommendation = `Add modern, hands-on industry curriculum modules for ${gap.skill}.`;
+      }
     }
 
     return {
-      skill : gap.skill,
-      demand : gap.demand,
-      priority : gap.priority,
-      recommendation : recommendation,
+      skill: gap.skill,
+      demand: gap.demand,
+      priority: gap.priority,
+      recommendation: recommendation,
     };
   });
   return recommendations;
@@ -822,6 +833,65 @@ app.get("/role-demand", async (req, res) => {
 // Oversupplied courses and industry alternatives
 app.get("/oversupplied-courses", (req, res) => {
     res.render("oversupplied-courses", { rolesData: oversuppliedCoursesData });
+});
+
+// ===== ANALYZE SKILL GAPS WORKFLOW =====
+
+// Step 1: Role Selection Page
+app.get("/analyze-skill-gaps", (req, res) => {
+    const rolesList = Object.values(skillQuestionsData);
+    res.render("analyze-skill-gaps", {
+        roles: rolesList,
+        selectedRole: rolesList[0]
+    });
+});
+
+// Step 2: 10 Questions Assessment Page
+app.get("/analyze-skill-gaps/assessment", (req, res) => {
+    const roleId = req.query.roleId || "full-stack-developer";
+    const role = skillQuestionsData[roleId] || skillQuestionsData["full-stack-developer"];
+    res.render("skill-gap-assessment", { role });
+});
+
+// Step 3: Handle Assessment Submission
+app.post("/analyze-skill-gaps/submit", async (req, res) => {
+    try {
+        const { roleId } = req.body;
+        const role = skillQuestionsData[roleId] || skillQuestionsData["full-stack-developer"];
+
+        const rawSkills = Array.isArray(req.body.skills)
+            ? req.body.skills
+            : (req.body.skills ? Object.values(req.body.skills) : []);
+
+        const possessedSkills = [];
+        const industryDemandMap = {};
+
+        rawSkills.forEach(item => {
+            const skillName = item.name;
+            const demand = parseInt(item.demand, 10) || 75;
+            industryDemandMap[skillName] = demand;
+
+            if (item.answer === "yes") {
+                possessedSkills.push(skillName);
+            }
+        });
+
+        // "By this data which we get from the user update it in the skill gaps and recommendation page.
+        // Keep the data in both these pages only according to the analysis of the analyze skill gaps questionnare created"
+        await SkillDemand.deleteMany({});
+        await SkillDemand.create({
+            district: "National / Industry Benchmark",
+            sector: role.sector,
+            course: role.title,
+            industryDemand: industryDemandMap,
+            currentCurriculum: possessedSkills
+        });
+
+        res.redirect("/skill-gap");
+    } catch (err) {
+        console.error("Error saving skill gap analysis:", err);
+        res.redirect("/skill-gap");
+    }
 });
 
 app.listen(8080, (req, res) => {
