@@ -8,6 +8,7 @@ const SkillDemand = require("./models/skillDemand");
 const EmployerFeedback = require("./models/EmployerFeedback");
 const JobPosting = require("./models/jobPosting");
 const PlacementOutcome = require("./models/placementOutcome");
+const oversuppliedCoursesData = require("./data/oversuppliedCourses");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -816,6 +817,11 @@ app.get("/role-demand", async (req, res) => {
         totalJobs: jobs.length
     });
 
+});
+
+// Oversupplied courses and industry alternatives
+app.get("/oversupplied-courses", (req, res) => {
+    res.render("oversupplied-courses", { rolesData: oversuppliedCoursesData });
 });
 
 app.listen(8080, (req, res) => {

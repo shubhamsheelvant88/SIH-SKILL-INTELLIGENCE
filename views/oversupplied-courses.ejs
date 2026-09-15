@@ -1,0 +1,260 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container-fluid px-0">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="mb-1"><i class="bi bi-collection-play text-primary"></i> Oversupplied Courses & Industry Alternatives</h1>
+            <p class="text-muted mb-0">Identify saturated online courses and discover actionable, high-demand skills preferred by hiring managers.</p>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="skill-chip"><i class="bi bi-briefcase"></i> 5 Roles</span>
+            <span class="skill-chip"><i class="bi bi-exclamation-triangle text-warning"></i> 25 Flooded Courses</span>
+            <span class="skill-chip"><i class="bi bi-stars text-success"></i> Industry Alternatives</span>
+        </div>
+    </div>
+
+    <!-- ===== ROLE SELECTOR CARD ===== -->
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body p-4">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-5 col-md-12">
+                    <label for="roleDropdown" class="form-label fw-bold mb-1">
+                        <i class="bi bi-funnel me-1 text-primary"></i> Select Professional Role / Degree:
+                    </label>
+                    <p class="text-muted small mb-0">Filter analysis across Engineering (CSE, ME) and Bachelor Degrees (BCA, B.Com, BBA).</p>
+                </div>
+                <div class="col-lg-7 col-md-12">
+                    <select id="roleDropdown" class="form-select form-select-lg border-primary-subtle shadow-sm" aria-label="Select Role">
+                        <% rolesData.forEach((r, idx) => { %>
+                            <option value="<%= r.id %>" <%= idx === 0 ? 'selected' : '' %>>
+                                <%= r.title %> — [<%= r.degree %>]
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quick Pill Buttons for desktop convenience -->
+            <div class="mt-3 pt-3 border-top d-flex flex-wrap gap-2 align-items-center">
+                <span class="small text-muted fw-semibold me-1"><i class="bi bi-lightning-charge"></i> Quick Select:</span>
+                <% rolesData.forEach((r, idx) => { %>
+                    <button type="button" 
+                            class="btn btn-sm role-pill-btn <%= idx === 0 ? 'btn-primary' : 'btn-outline-secondary' %>"
+                            data-role-id="<%= r.id %>">
+                        <i class="bi <%= r.icon %> me-1"></i> <%= r.title %>
+                    </button>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ROLE SECTIONS (Interactive Display) ===== -->
+    <% rolesData.forEach((role, rIndex) => { %>
+        <div class="role-content-section" id="role-section-<%= role.id %>" style="<%= rIndex === 0 ? 'display: block;' : 'display: none;' %>">
+
+            <!-- Role Summary Banner -->
+            <div class="card mb-4 border-0 shadow-sm" style="border-left: 5px solid var(--si-primary) !important;">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon blue" style="width: 48px; height: 48px; font-size: 1.4rem;">
+                                <i class="bi <%= role.icon %>"></i>
+                            </div>
+                            <div>
+                                <h3 class="mb-0 fw-bold"><%= role.title %></h3>
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle mt-1">
+                                    <i class="bi bi-mortarboard me-1"></i> Background: <%= role.degree %>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">
+                                <i class="bi bi-exclamation-circle me-1"></i> Market Status: High Certificate Saturation
+                            </span>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-0 mt-3" style="line-height: 1.6;">
+                        <strong class="text-dark">Market Reality:</strong> <%= role.summary %>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 5 Oversupplied Courses vs Suggested Learning Cards -->
+            <div class="mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="bi bi-arrow-left-right text-primary me-2"></i>5 Flooded Courses & Recommended Industry Alternatives
+                    </h4>
+                    <span class="text-muted small">Showing 5 curated comparisons</span>
+                </div>
+
+                <div class="row g-4">
+                    <% role.courses.forEach((course, cIndex) => { %>
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0 overflow-hidden comparison-card">
+                                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge bg-dark text-white rounded-pill px-3 py-1">Case #<%= cIndex + 1 %></span>
+                                        <span class="fw-semibold text-secondary small">Course Saturation Analysis</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-muted small">Frequently Seen On:</span>
+                                        <% course.platforms.forEach(p => { %>
+                                            <span class="badge bg-light text-dark border px-2 py-1"><%= p %></span>
+                                        <% }); %>
+                                    </div>
+                                </div>
+
+                                <div class="card-body p-0">
+                                    <div class="row g-0">
+                                        
+                                        <!-- LEFT: Oversupplied Course (Warning / Saturated) -->
+                                        <div class="col-lg-5 p-4 border-end bg-danger-subtle bg-opacity-10">
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <span class="badge bg-danger text-white">
+                                                    <i class="bi bi-exclamation-triangle me-1"></i> Oversupplied Course
+                                                </span>
+                                            </div>
+
+                                            <h5 class="fw-bold text-danger-emphasis mb-3">
+                                                <%= course.oversuppliedCourse %>
+                                            </h5>
+
+                                            <div class="mb-3">
+                                                <div class="small fw-semibold text-muted mb-1">
+                                                    <i class="bi bi-info-circle me-1"></i> Why It Is Oversupplied:
+                                                </div>
+                                                <p class="small text-secondary mb-0" style="line-height: 1.55;">
+                                                    <%= course.saturationReason %>
+                                                </p>
+                                            </div>
+
+                                            <div class="alert alert-warning border-warning-subtle py-2 px-3 mb-0 small">
+                                                <i class="bi bi-cone-striped me-1"></i>
+                                                <strong>Hiring Outcome:</strong> Hundreds of applicants submit identical certificates; minimal competitive advantage.
+                                            </div>
+                                        </div>
+
+                                        <!-- RIGHT: Suggested Learning (Positive / Industry Aligned) -->
+                                        <div class="col-lg-7 p-4 bg-success-subtle bg-opacity-10">
+                                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                                                <span class="badge bg-success text-white">
+                                                    <i class="bi bi-lightbulb me-1"></i> Suggested Learning (Industry Aligned)
+                                                </span>
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle small">
+                                                    <i class="bi bi-award me-1"></i> High Employer Value
+                                                </span>
+                                            </div>
+
+                                            <h5 class="fw-bold text-success-emphasis mb-2">
+                                                <%= course.suggestedLearning.title %>
+                                            </h5>
+
+                                            <p class="text-dark small mb-3" style="line-height: 1.6;">
+                                                <%= course.suggestedLearning.description %>
+                                            </p>
+
+                                            <!-- In-Demand Skills Chips -->
+                                            <div class="mb-3">
+                                                <div class="small fw-semibold text-dark mb-2">
+                                                    <i class="bi bi-tools me-1 text-success"></i> High-Demand Skills To Focus On:
+                                                </div>
+                                                <div class="d-flex flex-wrap gap-1">
+                                                    <% course.suggestedLearning.keySkills.forEach(skill => { %>
+                                                        <span class="badge bg-white text-dark border border-success-subtle shadow-xs py-1 px-2">
+                                                            <i class="bi bi-check2 text-success me-1"></i><%= skill %>
+                                                        </span>
+                                                    <% }); %>
+                                                </div>
+                                            </div>
+
+                                            <!-- Industry Value Note -->
+                                            <div class="p-2 px-3 rounded bg-white border border-success-subtle small">
+                                                <strong class="text-success-emphasis"><i class="bi bi-graph-up-arrow me-1"></i> Why Industry Demands This:</strong>
+                                                <span class="text-secondary ms-1"><%= course.suggestedLearning.industryValue %></span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+
+            <!-- Role Actionable Takeaway Banner -->
+            <div class="card border-0 bg-light p-4 shadow-sm mb-5">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon green" style="width: 44px; height: 44px; font-size: 1.2rem;">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-1 fw-bold">How to Stand Out in <%= role.title %></h5>
+                            <p class="text-muted small mb-0">Build 2 production-grade, deployed projects or verifiable case studies incorporating the suggested alternative skills above.</p>
+                        </div>
+                    </div>
+                    <a href="/recommendations" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-journal-check me-1"></i> View Curriculum Recommendations
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    <% }); %>
+
+</div>
+
+<!-- Interactive Client-Side Switching Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const dropdown = document.getElementById("roleDropdown");
+        const pillButtons = document.querySelectorAll(".role-pill-btn");
+        const sections = document.querySelectorAll(".role-content-section");
+
+        function showRole(roleId) {
+            // Update sections visibility
+            sections.forEach(sec => {
+                if (sec.id === "role-section-" + roleId) {
+                    sec.style.display = "block";
+                } else {
+                    sec.style.display = "none";
+                }
+            });
+
+            // Sync dropdown value
+            if (dropdown && dropdown.value !== roleId) {
+                dropdown.value = roleId;
+            }
+
+            // Sync pill buttons styling
+            pillButtons.forEach(btn => {
+                if (btn.getAttribute("data-role-id") === roleId) {
+                    btn.classList.remove("btn-outline-secondary");
+                    btn.classList.add("btn-primary");
+                } else {
+                    btn.classList.remove("btn-primary");
+                    btn.classList.add("btn-outline-secondary");
+                }
+            });
+        }
+
+        // Dropdown change event
+        if (dropdown) {
+            dropdown.addEventListener("change", function() {
+                showRole(this.value);
+            });
+        }
+
+        // Pill buttons click event
+        pillButtons.forEach(btn => {
+            btn.addEventListener("click", function() {
+                const roleId = this.getAttribute("data-role-id");
+                showRole(roleId);
+            });
+        });
+    });
+</script>

@@ -1188,3 +1188,28 @@ small.text-muted {
     color: var(--si-text-muted) !important;
     font-size: 0.78rem;
 }
+
+/* ============================================================
+   Oversupplied Courses Page Styles
+   ============================================================ */
+.comparison-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--si-border) !important;
+}
+
+.comparison-card:hover {
+    box-shadow: var(--si-shadow-md) !important;
+    transform: translateY(-2px);
+}
+
+.role-pill-btn {
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 0.35rem 0.85rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.shadow-xs {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
