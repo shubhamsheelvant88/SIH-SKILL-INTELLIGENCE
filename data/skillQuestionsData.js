@@ -16,66 +16,68 @@ const skillQuestionsData = {
     questions: [
       {
         id: "fs-q1",
-        skill: "Next.js & Server-Side Rendering (SSR/RSC)",
-        question: "Do you have hands-on experience building production web applications using Next.js (App Router, React Server Components, and SSR)?",
-        demand: 90,
-        recommendation: "Add Next.js 15 App Router, Server Components, and SSR hybrid rendering modules with deployment on Vercel/AWS ECS."
+        skill: "JavaScript", //Production Authentication (OAuth 2.0 / JWT Rotation)
+        question: "", //Can you implement secure authentication and authorization flows including OAuth 2.0, OpenID Connect, and JWT refresh token rotation?
+        demand: 82,
+        recommendation: "" //Teach enterprise authentication architectures using OAuth 2.0, OpenID Connect, RBAC, and secure JWT rotation mechanisms.
       },
       {
         id: "fs-q2",
-        skill: "TypeScript Strict Mode",
+        skill: "TypeScript", //TypeScript Strict Mode
         question: "Are you proficient in building full-stack applications using TypeScript with strict type-safety, generics, and interface modeling?",
         demand: 88,
         recommendation: "Integrate TypeScript strict mode throughout frontend and backend modules, replacing legacy plain JavaScript practices."
       },
       {
         id: "fs-q3",
-        skill: "PostgreSQL & Modern ORMs (Prisma / Drizzle)",
+        skill: "PostgreSQL", //PostgreSQL & Modern ORMs (Prisma / Drizzle)
         question: "Can you design normalized relational databases, manage schema migrations, and optimize queries using PostgreSQL and Prisma or Drizzle ORM?",
         demand: 84,
         recommendation: "Implement advanced relational database design, indexing strategies, ACID transaction management, and Prisma/Drizzle ORM workflows."
       },
       {
         id: "fs-q4",
-        skill: "Docker & Containerization",
+        skill: "Docker", //Docker & Containerization
         question: "Can you containerize full-stack services using multi-stage Dockerfiles and manage local multi-service environments with Docker Compose?",
         demand: 80,
         recommendation: "Incorporate containerization fundamentals, multi-stage Docker builds, container optimization, and local microservice orchestration."
       },
       {
         id: "fs-q5",
-        skill: "Automated CI/CD Pipelines (GitHub Actions / Cloud)",
+        skill: "React", //Automated End-to-End & Unit Testing (Playwright / Vitest)
+        question: "Are you proficient in mastering React's state management paradigms—including the built-in Context API, hooks like useReducer, and advanced rendering optimization techniques?", //Do you write automated test suites (unit, integration, and end-to-end browser tests) using tools like Vitest and Playwright?
+        demand: 70,
+        recommendation: "Master the foundational mechanics of how React schedules updates and triggers re-renders, as deep control over state flow is what separates a senior engineer from a beginner." //Embed automated test-driven development (TDD) using Vitest and end-to-end browser automation testing with Playwright.
+      },
+      {
+        id: "fs-q6",
+        skill: "Node.js", //Distributed Caching with Redis
+        question: "Are you proficient in managing the Node.js Event Loop and Streams to handle high-throughput, asynchronous data profiles?", //Do you know how to implement distributed caching layers, rate limiting, and session stores in high-traffic APIs using Redis?"
+        demand: 75,
+        recommendation: "Focus entirely on mastering Node.js Streams and the Event Loop architecture, as this foundation directly dictates your ability to write performant, high-scale applications."
+      },
+      {
+        id: "fs-q7",
+        skill: "AWS", //GraphQL & Event-Driven API Architecture
+        question: "Are you proficient in architecting secure, scalable cloud infrastructure using AWS IAM and core compute/networking services?",//Can you architect scalable APIs beyond basic REST, utilizing GraphQL schemas, WebSockets, or message queues (Kafka / RabbitMQ)?
+        demand: 72,
+        recommendation: "Prioritize learning the fundamentals of AWS IAM (Identity and Access Management) alongside core networking tools like VPCs, as securing and routing your cloud infrastructure is the mandatory foundation for everything else you build."//Expand backend engineering beyond basic CRUD to include GraphQL APIs, asynchronous event brokers, and API gateways.
+      },
+      
+      {
+        id: "fs-q8",
+        skill: "CI/CD Pipelines (GitHub Actions / Cloud)", //Automated CI/CD Pipelines (GitHub Actions / Cloud)
         question: "Have you configured automated CI/CD deployment pipelines (e.g. GitHub Actions) with automated testing, linting, and cloud deployments?",
         demand: 78,
         recommendation: "Add automated CI/CD pipeline authoring with GitHub Actions, secret management, and automated zero-downtime deployment pipelines."
       },
-      {
-        id: "fs-q6",
-        skill: "Distributed Caching with Redis",
-        question: "Do you know how to implement distributed caching layers, rate limiting, and session stores in high-traffic APIs using Redis?",
-        demand: 75,
-        recommendation: "Introduce Redis in-memory caching patterns, invalidation strategies, session stores, and rate-limiting middleware."
-      },
-      {
-        id: "fs-q7",
-        skill: "GraphQL & Event-Driven API Architecture",
-        question: "Can you architect scalable APIs beyond basic REST, utilizing GraphQL schemas, WebSockets, or message queues (Kafka / RabbitMQ)?",
-        demand: 72,
-        recommendation: "Expand backend engineering beyond basic CRUD to include GraphQL APIs, asynchronous event brokers, and API gateways."
-      },
-      {
-        id: "fs-q8",
-        skill: "Automated End-to-End & Unit Testing (Playwright / Vitest)",
-        question: "Do you write automated test suites (unit, integration, and end-to-end browser tests) using tools like Vitest and Playwright?",
-        demand: 70,
-        recommendation: "Embed automated test-driven development (TDD) using Vitest and end-to-end browser automation testing with Playwright."
-      },
+      
       {
         id: "fs-q9",
-        skill: "Production Authentication (OAuth 2.0 / JWT Rotation)",
-        question: "Can you implement secure authentication and authorization flows including OAuth 2.0, OpenID Connect, and JWT refresh token rotation?",
-        demand: 82,
-        recommendation: "Teach enterprise authentication architectures using OAuth 2.0, OpenID Connect, RBAC, and secure JWT rotation mechanisms."
+        skill: "Next.js", //Next.js & Server-Side Rendering (SSR/RSC)
+        question: "Do you have hands-on experience building production web applications using Next.js (App Router, React Server Components, and SSR)?",
+        demand: 90,
+        recommendation: "Add Next.js 15 App Router, Server Components, and SSR hybrid rendering modules with deployment on Vercel/AWS ECS."
       },
       {
         id: "fs-q10",
