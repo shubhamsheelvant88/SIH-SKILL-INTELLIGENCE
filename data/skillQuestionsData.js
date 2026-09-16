@@ -17,9 +17,9 @@ const skillQuestionsData = {
       {
         id: "fs-q1",
         skill: "JavaScript", //Production Authentication (OAuth 2.0 / JWT Rotation)
-        question: "", //Can you implement secure authentication and authorization flows including OAuth 2.0, OpenID Connect, and JWT refresh token rotation?
+        question: "Are you proficient in mastering JavaScript's asynchronous patterns—specifically the Event Loop, Promises, and async/await mechanics—alongside deep closures and scope behavior?", //Can you implement secure authentication and authorization flows including OAuth 2.0, OpenID Connect, and JWT refresh token rotation?
         demand: 82,
-        recommendation: "" //Teach enterprise authentication architectures using OAuth 2.0, OpenID Connect, RBAC, and secure JWT rotation mechanisms.
+        recommendation: "Build a rock-solid understanding of the JavaScript Event Loop, execution contexts, and closures, as mastering these runtime mechanics is the absolute prerequisite for debugging and writing predictable code." //Teach enterprise authentication architectures using OAuth 2.0, OpenID Connect, RBAC, and secure JWT rotation mechanisms.
       },
       {
         id: "fs-q2",
