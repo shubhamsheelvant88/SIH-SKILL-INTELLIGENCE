@@ -32,20 +32,11 @@ Skill Intelligence is an Express and MongoDB web application for analysing the r
 
 The application provides server-rendered dashboards and reports for students, employers, training providers, and programme administrators.
 
-## Problem Statement
+## Problem Description in SIH portal
 
-Training programmes can become misaligned with changing employer requirements. Courses may continue teaching oversupplied or outdated skills while employers struggle to find candidates with practical, job-ready capabilities.
-
-Skill Intelligence addresses this mismatch by:
-
-1. Collecting job-posting information.
-2. Extracting skills from job descriptions.
-3. Calculating skill demand by job role and location.
-4. Comparing demand with a curriculum or learner profile.
-5. Generating skill-gap recommendations.
-6. Validating gaps through employer feedback.
-7. Producing district-level training plans.
-8. Comparing recommended skills with placement outcomes.
+	
+• Problem Description Skill-development programmes may be designed using broad or historical occupation categories that do not fully reflect changing technologies, local industry demand, job roles, productivity standards and employer expectations.Course curricula, equipment, trainer capacity and assessment methods may lag emerging requirements. Employers may struggle to identify job-ready candidates, while trainees may complete courses that have limited placement potential. The challenge is to create a continuous, evidence-based mechanism for translating industry demand into course design, capacity planning, trainer development and candidate guidance.
+• Expected Solution / Outcome A labour-market intelligence and curriculum-alignment platform that combines job-posting signals, employer surveys, industry consultations, sector growth data, placement outcomes and emerging-technology trends to identify demand by role, skill, location and proficiency level. The system should map skill gaps to qualifications and courses,recommend curriculum updates, flag obsolete or oversupplied courses,support employer validation and generate district-level training plans. Expected outcomes include stronger placement rates, reduced mismatch, improved employer satisfaction, timely course revision, better equipment and trainer planning, and clearer career pathways for candidates.
 
 ## Features
 
